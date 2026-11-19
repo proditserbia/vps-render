@@ -1,3 +1,4 @@
+import { doohStaticAsset, DoohFonts } from "../doohAssets";
 import React from "react";
 import {
   AbsoluteFill,
@@ -117,11 +118,11 @@ const UI: React.FC<{ frame: number; photo?: boolean }> = ({ frame, photo }) => {
         }}
       >
         <Img
-          src={staticFile("assets/la-sunset/like.png")}
+          src={doohStaticAsset("assets/la-sunset/like.png")}
           style={{ height: photo ? 66 : 98 }}
         />
         <Img
-          src={staticFile("assets/la-sunset/subscribe.png")}
+          src={doohStaticAsset("assets/la-sunset/subscribe.png")}
           style={{ height: photo ? 66 : 98 }}
         />
       </div>
@@ -306,11 +307,7 @@ export const ArtistSunsetLAScene: React.FC<ArtistLAProps> = (props) => {
   );
   return (
     <AbsoluteFill style={{ background: "#fff", overflow: "hidden" }}>
-      <style>{`
-      @font-face{font-family:LAExtra;src:url("${staticFile("assets/fonts/YouTubeDisplay-ExtraBold.ttf")}")}
-      @font-face{font-family:LABold;src:url("${staticFile("assets/fonts/YouTubeDisplay-Bold.ttf")}")}
-      @font-face{font-family:LARoboto;src:url("${staticFile("assets/fonts/Roboto-Medium.ttf")}")}
-    `}</style>
+      <DoohFonts prefix="LA" />
       {frame < 304 && (
         <>
           <div
@@ -342,7 +339,7 @@ export const ArtistSunsetLAScene: React.FC<ArtistLAProps> = (props) => {
           {frame < 264 && <Copy props={props} frame={frame} />}
           {frame < 250 && (
             <Img
-              src={staticFile("assets/la-sunset/logo-black.png")}
+              src={doohStaticAsset("assets/la-sunset/logo-black.png")}
               style={{
                 position: "absolute",
                 left: 1770,
@@ -394,7 +391,7 @@ export const ArtistSunsetLAScene: React.FC<ArtistLAProps> = (props) => {
           </div>
           <div style={{ ...plane, transform: matrix(finalLogoH) }}>
             <Img
-              src={staticFile("assets/la-sunset/logo-white.png")}
+              src={doohStaticAsset("assets/la-sunset/logo-white.png")}
               style={{ position: "absolute", left: 1552, top: 3, width: 690 }}
             />
           </div>

@@ -1,6 +1,7 @@
+import { doohStaticAsset } from "../doohAssets";
 import React from "react";
 import { ArtistSunsetLAScene } from "./ArtistSunsetLAScene";
-import { AbsoluteFill, Composition, Img, staticFile } from "remotion";
+import { AbsoluteFill, Composition, Img } from "remotion";
 
 export type ArtistLAProps = {
   artistName: string;
@@ -16,18 +17,15 @@ export const artistLADefaults: ArtistLAProps = {
   pillCopy: "New Single",
   featuredArtistImage: "assets/la-sunset/artist.jpg",
   featuredVideo: "assets/la-sunset/video.mp4",
-  background: "assets/la-sunset/background.jpg",
+  background: doohStaticAsset("assets/la-sunset/background.jpg"),
 };
-const asset = (uri: string) =>
-  /^(https?:|data:|blob:)/.test(uri) ? uri : staticFile(uri);
-
 export const ArtistSunsetLA = ArtistSunsetLAScene;
 export const ArtistSunsetLAInSitu: React.FC<
   ArtistLAProps & { children?: React.ReactNode }
 > = (props) => (
   <AbsoluteFill style={{ background: "#111" }}>
     <Img
-      src={asset(props.background)}
+      src={doohStaticAsset(props.background)}
       style={{
         position: "absolute",
         width: 2557.44,

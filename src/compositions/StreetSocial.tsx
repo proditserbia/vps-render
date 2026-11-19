@@ -1,10 +1,10 @@
+import { doohStaticAsset } from "../doohAssets";
 import React from "react";
 import {
   AbsoluteFill,
   Audio,
   Img,
   OffthreadVideo,
-  staticFile,
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
@@ -97,7 +97,9 @@ export const StreetSocial: React.FC<{
   const brandFrame = index;
   return (
     <AbsoluteFill style={{ background: "black", overflow: "hidden" }}>
-      <Audio src={staticFile(`assets/audio/${family}-street-ambient.m4a`)} />
+      <Audio
+        src={doohStaticAsset(`assets/audio/${family}-street-ambient.m4a`)}
+      />
       <div
         style={{
           ...plane,
@@ -108,7 +110,7 @@ export const StreetSocial: React.FC<{
       >
         <OffthreadVideo
           muted
-          src={staticFile(`assets/social/${family}-street.mp4`)}
+          src={doohStaticAsset(`assets/social/${family}-street.mp4`)}
           style={{ ...plane, width: "100%", height: "100%" }}
         />
         {family === "la" ? (
@@ -141,7 +143,7 @@ export const StreetSocial: React.FC<{
       </div>
       {(brandFrame <= 45 || brandFrame >= 360) && (
         <Img
-          src={staticFile(
+          src={doohStaticAsset(
             `assets/social/branding/${String(brandFrame).padStart(3, "0")}.png`,
           )}
           style={{ ...plane, width: 1080, height: 1920 }}

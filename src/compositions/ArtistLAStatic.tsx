@@ -1,3 +1,4 @@
+import { doohStaticAsset } from "../doohAssets";
 import React, { useEffect, useState } from "react";
 import {
   AbsoluteFill,
@@ -23,11 +24,11 @@ export const ArtistLAStatic: React.FC<ArtistLAProps> = (props) => {
     Promise.all([
       new FontFace(
         "LAStaticDisplay",
-        `url("${staticFile("assets/fonts/YouTubeDisplay-ExtraBold.ttf")}")`,
+        `url("${doohStaticAsset("assets/fonts/YouTubeDisplay-ExtraBold.ttf")}")`,
       ).load(),
       new FontFace(
         "LAStaticRoboto",
-        `url("${staticFile("assets/fonts/Roboto-Medium.ttf")}")`,
+        `url("${doohStaticAsset("assets/fonts/Roboto-Medium.ttf")}")`,
       ).load(),
     ])
       .then((fonts) => {
@@ -89,7 +90,7 @@ export const ArtistLAStatic: React.FC<ArtistLAProps> = (props) => {
         }}
       />
       <Img
-        src={staticFile("assets/la-sunset/like.png")}
+        src={doohStaticAsset("assets/la-sunset/like.png")}
         style={{
           position: "absolute",
           left: 45,
@@ -99,7 +100,7 @@ export const ArtistLAStatic: React.FC<ArtistLAProps> = (props) => {
         }}
       />
       <Img
-        src={staticFile("assets/la-sunset/subscribe.png")}
+        src={doohStaticAsset("assets/la-sunset/subscribe.png")}
         style={{
           position: "absolute",
           left: 245,
@@ -185,7 +186,7 @@ export const ArtistLAStatic: React.FC<ArtistLAProps> = (props) => {
         {props.pillCopy}
       </div>
       <Img
-        src={staticFile("assets/la-sunset/logo-black.png")}
+        src={doohStaticAsset("assets/la-sunset/logo-black.png")}
         style={{ position: "absolute", left: 1850, top: 810, width: 415 }}
       />
     </AbsoluteFill>

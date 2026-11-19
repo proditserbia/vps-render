@@ -1,3 +1,4 @@
+import { doohStaticAsset, DoohFonts } from "../doohAssets";
 import React from "react";
 import {
   AbsoluteFill,
@@ -20,7 +21,7 @@ import { artistLADefaults, type ArtistLAProps } from "./ArtistSunsetLA";
 export type ArtistGodzillaProps = ArtistLAProps;
 export const godzillaDefaults: ArtistGodzillaProps = {
   ...artistLADefaults,
-  background: "assets/godzilla/insitu-background.png",
+  background: doohStaticAsset("assets/godzilla/insitu-background.png"),
 };
 type Track = number[][];
 type SceneData = {
@@ -70,13 +71,7 @@ const plane: React.CSSProperties = {
   top: 0,
   transformOrigin: "0 0",
 };
-const FontStyles = () => (
-  <style>{`
-@font-face{font-family:GodzExtra;src:url('${staticFile("assets/fonts/YouTubeDisplay-ExtraBold.ttf")}')}
-@font-face{font-family:GodzBold;src:url('${staticFile("assets/fonts/YouTubeDisplay-Bold.ttf")}')}
-@font-face{font-family:GodzRoboto;src:url('${staticFile("assets/fonts/Roboto-Medium.ttf")}')}
-`}</style>
-);
+const FontStyles = () => <DoohFonts prefix="Godz" />;
 
 const Logo: React.FC<{
   x: number;
@@ -100,7 +95,9 @@ const Logo: React.FC<{
     </svg>
   ) : (
     <Img
-      src={staticFile(`assets/la-sunset/logo-${white ? "white" : "black"}.png`)}
+      src={doohStaticAsset(
+        `assets/la-sunset/logo-${white ? "white" : "black"}.png`,
+      )}
       style={{
         ...plane,
         left: x - (width * 195) / 1243,
@@ -127,7 +124,7 @@ const Buttons: React.FC<{
     }}
   >
     <Img
-      src={staticFile("assets/la-sunset/like.png")}
+      src={doohStaticAsset("assets/la-sunset/like.png")}
       style={{ width: height * 2.5, height, objectFit: "fill" }}
     />
     {white ? (
@@ -149,7 +146,7 @@ const Buttons: React.FC<{
       </div>
     ) : (
       <Img
-        src={staticFile("assets/la-sunset/subscribe.png")}
+        src={doohStaticAsset("assets/la-sunset/subscribe.png")}
         style={{ height, width: height * 2.7 }}
       />
     )}
@@ -612,7 +609,7 @@ const Scene: React.FC<{
               <>
                 <div style={{ ...plane, transform: matrix(likeCorrection) }}>
                   <Img
-                    src={staticFile("assets/la-sunset/like.png")}
+                    src={doohStaticAsset("assets/la-sunset/like.png")}
                     style={{
                       ...plane,
                       left: sideButtonX,
@@ -625,7 +622,7 @@ const Scene: React.FC<{
                 </div>
                 <div style={{ ...plane, transform: matrix(buttonCorrection) }}>
                   <Img
-                    src={staticFile("assets/la-sunset/subscribe.png")}
+                    src={doohStaticAsset("assets/la-sunset/subscribe.png")}
                     style={{
                       ...plane,
                       left: sideButtonX + sideButtonHeight * 2.74,
@@ -844,7 +841,7 @@ const Scene: React.FC<{
                 ([key, [x, y, width, height]]) => (
                   <Img
                     key={key}
-                    src={staticFile(`assets/godzilla/${key}-white.png`)}
+                    src={doohStaticAsset(`assets/godzilla/${key}-white.png`)}
                     style={{
                       ...plane,
                       left: x,
@@ -922,10 +919,28 @@ export const GodzillaSocialRight: React.FC<ArtistGodzillaProps> = (props) => (
   </div>
 );
 /** Shared AE side scenes; exposing them does not change existing Godzilla outputs. */
-export const GodzillaSidePanel: React.FC<ArtistGodzillaProps & {side: 'left' | 'right'}> = ({side,...props}) => (
-  <div style={{...plane,width:side==='left'?2352:1952,height:1666,overflow:'hidden'}}>
+export const GodzillaSidePanel: React.FC<
+  ArtistGodzillaProps & { side: "left" | "right" }
+> = ({ side, ...props }) => (
+  <div
+    style={{
+      ...plane,
+      width: side === "left" ? 2352 : 1952,
+      height: 1666,
+      overflow: "hidden",
+    }}
+  >
     <FontStyles />
-    <div style={{...plane,width:side==='left'?1176:976,height:834,transform:'scale(2)'}}><Scene name={side} props={props}/></div>
+    <div
+      style={{
+        ...plane,
+        width: side === "left" ? 1176 : 976,
+        height: 834,
+        transform: "scale(2)",
+      }}
+    >
+      <Scene name={side} props={props} />
+    </div>
   </div>
 );
 const panelSpecs = [
@@ -979,7 +994,10 @@ const quad = (p: number[], w: number, h: number) => {
 export const GodzillaInSitu: React.FC<ArtistGodzillaProps> = (props) => (
   <AbsoluteFill style={{ background: "black" }}>
     <GodzillaGlass />
-    <Img src={asset(props.background)} style={{ width: 1920, height: 1080 }} />
+    <Img
+      src={doohStaticAsset(props.background)}
+      style={{ width: 1920, height: 1080 }}
+    />
     <div
       style={{
         ...plane,
@@ -1089,7 +1107,7 @@ export const GodzillaInSitu: React.FC<ArtistGodzillaProps> = (props) => (
       </div>
     </div>
     <Img
-      src={staticFile("assets/godzilla/insitu-foreground.png")}
+      src={doohStaticAsset("assets/godzilla/insitu-foreground.png")}
       style={{
         ...plane,
         width: 1920,
@@ -1098,7 +1116,7 @@ export const GodzillaInSitu: React.FC<ArtistGodzillaProps> = (props) => (
       }}
     />
     <Img
-      src={staticFile("assets/godzilla/insitu-foreground.png")}
+      src={doohStaticAsset("assets/godzilla/insitu-foreground.png")}
       style={{
         ...plane,
         width: 1920,

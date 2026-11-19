@@ -1,3 +1,4 @@
+import { doohStaticAsset, DoohFonts } from "../doohAssets";
 import React from "react";
 import {
   AbsoluteFill,
@@ -40,7 +41,7 @@ const asset = (uri: string) =>
   /^(https?:|data:|blob:)/.test(uri) ? uri : staticFile(uri);
 export const megazillaDefaults: ArtistLAProps = {
   ...artistLADefaults,
-  background: "assets/godzilla/insitu-background.png",
+  background: doohStaticAsset("assets/godzilla/insitu-background.png"),
 };
 export const megaPanels = [
   { id: "farleft-panel01", width: 2352, height: 1666, x: 0, y: 0 },
@@ -49,13 +50,7 @@ export const megaPanels = [
   { id: "farright-panel04", width: 1952, height: 1666, x: 10600, y: 0 },
   { id: "bottomcenter-panel05", width: 4840, height: 1198, x: 4056, y: 1666 },
 ];
-const Fonts = () => (
-  <style>{`
-@font-face{font-family:MegaExtra;src:url("${staticFile("assets/fonts/YouTubeDisplay-ExtraBold.ttf")}")}
-@font-face{font-family:MegaBold;src:url("${staticFile("assets/fonts/YouTubeDisplay-Bold.ttf")}")}
-@font-face{font-family:MegaRoboto;src:url("${staticFile("assets/fonts/Roboto-Medium.ttf")}")}
-`}</style>
-);
+const Fonts = () => <DoohFonts prefix="Mega" />;
 function pose(e: Element, f: number) {
   const r = rowAt(e.rows, f),
     corners = [r.slice(0, 2), r.slice(2, 4), r.slice(4, 6), r.slice(6, 8)];
@@ -132,14 +127,14 @@ const Tracked: React.FC<{
   else if (e.kind === "asset")
     child = (
       <Img
-        src={staticFile(e.asset!)}
+        src={doohStaticAsset(e.asset!)}
         style={{ width: "100%", height: "100%" }}
       />
     );
   else if (e.kind.startsWith("logo-"))
     child = (
       <Img
-        src={staticFile(`assets/la-sunset/${e.kind}.png`)}
+        src={doohStaticAsset(`assets/la-sunset/${e.kind}.png`)}
         style={{ width: "100%", height: "100%", objectFit: "contain" }}
       />
     );
@@ -366,7 +361,7 @@ export const MegazillaInSitu: React.FC<ArtistLAProps> = (props) => {
     <AbsoluteFill style={{ background: "black", overflow: "hidden" }}>
       <GodzillaGlass />
       <Img
-        src={staticFile("assets/godzilla/insitu-background.png")}
+        src={doohStaticAsset("assets/godzilla/insitu-background.png")}
         style={{ width: 1920, height: 1080 }}
       />
       <Surface width={8248} height={2864} h={h}>
@@ -392,7 +387,7 @@ export const MegazillaInSitu: React.FC<ArtistLAProps> = (props) => {
         </defs>
       </svg>
       <Img
-        src={staticFile("assets/godzilla/insitu-foreground.png")}
+        src={doohStaticAsset("assets/godzilla/insitu-foreground.png")}
         style={{
           ...plane,
           width: 1920,
@@ -420,7 +415,7 @@ export const MegazillaSocial: React.FC<ArtistLAProps> = (props) => {
   ]);
   return (
     <AbsoluteFill style={{ background: "black", overflow: "hidden" }}>
-      <Audio src={staticFile("assets/audio/ny-street-ambient.m4a")} />
+      <Audio src={doohStaticAsset("assets/audio/ny-street-ambient.m4a")} />
       <div
         style={{
           ...plane,
@@ -431,7 +426,7 @@ export const MegazillaSocial: React.FC<ArtistLAProps> = (props) => {
       >
         <OffthreadVideo
           muted
-          src={staticFile("assets/social/ny-street.mp4")}
+          src={doohStaticAsset("assets/social/ny-street.mp4")}
           style={{ width: 4096, height: 2304 }}
         />
         <Surface width={8248} height={2864} h={homography(8248, 2864, corners)}>
@@ -447,7 +442,7 @@ export const MegazillaSocial: React.FC<ArtistLAProps> = (props) => {
       </div>
       {(index <= 45 || index >= 360) && (
         <Img
-          src={staticFile(
+          src={doohStaticAsset(
             `assets/social/branding/${String(index).padStart(3, "0")}.png`,
           )}
           style={{ ...plane, width: 1080, height: 1920 }}

@@ -1,0 +1,23 @@
+{
+  "outputVariant": "flat",
+  "artistName": {
+    "type": "text",
+    "value": "Artist Name"
+  },
+  "songTitle": {
+    "type": "text",
+    "value": "SONG TITLE"
+  },
+  "pillCopy": {
+    "type": "text",
+    "value": "New Single"
+  },
+  "featuredArtistImage": {
+    "type": "image",
+    "uri": "assets/la-sunset/artist.jpg"
+  },
+  "featuredVideo": {
+    "type": "video",
+    "uri": "assets/la-sunset/video.mp4"
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "la": {
+    "motion": {
+      "width": 2304,
+      "height": 936,
+      "fps": 60,
+      "durationInFrames": 900,
+      "format": "mp4",
+      "label": "Motion master",
+      "audio": "none"
+    },
+    "flat": {
+      "width": 2304,
+      "height": 936,
+      "fps": 30,
+      "durationInFrames": 450,
+      "format": "mp4",
+      "label": "Stitched flat preview",
+      "audio": "none"
+    },
+    "insitu": {
+      "width": 1920,
+      "height": 1080,
+      "fps": 30,
+      "durationInFrames": 450,
+      "format": "mp4",
+      "label": "Motion InSitu",
+      "audio": "none"
+    },
+    "static": {
+      "width": 2304,
+      "height": 936,
+      "fps": 60,
+      "durationInFrames": 900,
+      "format": "jpg",
+      "frame": 25,
+      "label": "Static artwork",
+      "audio": "none"
+    },
+    "static-insitu": {
+      "width": 1920,
+      "height": 1080,
+      "fps": 30,
+      "durationInFrames": 450,
+      "format": "mp4",
+      "label": "Static InSitu",
+      "audio": "none"
+    },
+    "social": {
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "durationInFrames": 450,
+      "reviewOnly": true,
+      "format": "mp4",
+      "label": "Social 9:16 — street preview",
+      "audio": "ambient"
+    }
+  },
+  "ny": {
+    "flat": {
+      "width": 6276,
+      "height": 834,
+      "fps": 30,
+      "durationInFrames": 450,
+      "format": "mp4",
+      "label": "Stitched flat preview",
+      "audio": "none"
+    },
+    "insitu": {
+      "width": 1920,
+      "height": 1080,
+      "fps": 30,
+      "durationInFrames": 450,
+      "format": "mp4",
+      "label": "Motion InSitu",
+      "audio": "none"
+    },
+    "panel01": {
+      "width": 2352,
+      "height": 1666,
+      "fps": 60,
+      "durationInFrames": 900,
+      "cropX": 0,
+      "format": "mp4",
+      "label": "Far left · Panel 01",
+      "audio": "none"
+    },
+    "panel02": {
+      "width": 4124,
+      "height": 1666,
+      "fps": 60,
+      "durationInFrames": 900,
+      "cropX": 2352,
+      "format": "mp4",
+      "label": "Center left · Panel 02",
+      "audio": "none"
+    },
+    "panel03": {
+      "width": 4124,
+      "height": 1666,
+      "fps": 60,
+      "durationInFrames": 900,
+      "cropX": 6476,
+      "format": "mp4",
+      "label": "Center right · Panel 03",
+      "audio": "none"
+    },
+    "panel04": {
+      "width": 1952,
+      "height": 1666,
+      "fps": 60,
+      "durationInFrames": 900,
+      "cropX": 10600,
+      "format": "mp4",
+      "label": "Far right · Panel 04",
+      "audio": "none"
+    },
+    "social": {
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "durationInFrames": 450,
+      "reviewOnly": true,
+      "format": "mp4",
+      "label": "Social 9:16 — street preview",
+      "audio": "ambient"
+    }
+  }
+}

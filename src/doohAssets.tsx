@@ -20,6 +20,27 @@ const files = [
 ];
 const loaded = new Map<string, Promise<FontFace>>();
 
+export function loadDoohFonts(prefix: "LA" | "Godz" | "Mega") {
+  const requests = ["Extra", "Bold", "Roboto"].map((suffix, i) => {
+    const family = `${prefix}${suffix}`;
+    let request = loaded.get(family);
+    if (!request) {
+      request = new FontFace(
+        family,
+        `url("${doohStaticAsset(`assets/fonts/${files[i]}`)}")`,
+      )
+        .load()
+        .then((font) => {
+          document.fonts.add(font);
+          return font;
+        });
+      loaded.set(family, request);
+    }
+    return request;
+  });
+  return Promise.all(requests);
+}
+
 /** Wait for remote fonts before capturing frames, as in the existing templates. */
 export function DoohFonts({ prefix }: { prefix: "LA" | "Godz" | "Mega" }) {
   const [handle] = useState(() =>
@@ -27,24 +48,7 @@ export function DoohFonts({ prefix }: { prefix: "LA" | "Godz" | "Mega" }) {
   );
   useEffect(() => {
     let active = true;
-    const requests = ["Extra", "Bold", "Roboto"].map((suffix, i) => {
-      const family = `${prefix}${suffix}`;
-      let request = loaded.get(family);
-      if (!request) {
-        request = new FontFace(
-          family,
-          `url("${doohStaticAsset(`assets/fonts/${files[i]}`)}")`,
-        )
-          .load()
-          .then((font) => {
-            document.fonts.add(font);
-            return font;
-          });
-        loaded.set(family, request);
-      }
-      return request;
-    });
-    Promise.all(requests)
+    loadDoohFonts(prefix)
       .then(() => {
         if (active) continueRender(handle);
       })

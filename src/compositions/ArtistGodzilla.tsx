@@ -1,4 +1,4 @@
-import { doohStaticAsset, DoohFonts } from "../doohAssets";
+import { doohStaticAsset, DoohFonts, loadDoohFonts } from "../doohAssets";
 import React from "react";
 import {
   AbsoluteFill,
@@ -10,6 +10,9 @@ import {
   staticFile,
   useCurrentFrame,
   useVideoConfig,
+  delayRender,
+  continueRender,
+  cancelRender,
 } from "remotion";
 import { GodzillaSideWarp } from "./GodzillaSideWarp";
 import measured from "./godzilla-measured.json";
@@ -19,6 +22,48 @@ import { GodzillaGlass } from "./GodzillaGlass";
 import { artistLADefaults, type ArtistLAProps } from "./ArtistSunsetLA";
 
 export type ArtistGodzillaProps = ArtistLAProps;
+
+// Measure the actual loaded font, not character count: wide letters and narrow
+// panel layouts otherwise cause implicit wrapping into the next text layer.
+const FittedCopy: React.FC<{
+  text: string;
+  maxWidth: number;
+  style: React.CSSProperties;
+}> = ({ text, maxWidth, style }) => {
+  const baseSize = Number(style.fontSize);
+  const family = String(style.fontFamily);
+  const [size, setSize] = React.useState(baseSize);
+  const [handle] = React.useState(() => delayRender("Fitting Godzilla copy"));
+  React.useEffect(() => {
+    let active = true;
+    const pending = delayRender("Measuring Godzilla copy");
+    loadDoohFonts("Godz")
+      .then(() => {
+        if (!active) return;
+        const context = document.createElement("canvas").getContext("2d");
+        if (!context) throw new Error("Text measurement unavailable");
+        context.font = `${baseSize}px ${family}`;
+        const width = Math.max(
+          1,
+          ...text.split("\n").map((line) => context.measureText(line).width),
+        );
+        setSize(baseSize * Math.min(1, maxWidth / width));
+        continueRender(pending);
+        continueRender(handle);
+      })
+      .catch((error) => {
+        if (active) cancelRender(error);
+      });
+    return () => {
+      active = false;
+      continueRender(pending);
+      continueRender(handle);
+    };
+  }, [text, maxWidth, baseSize, family, handle]);
+  return (
+    <div style={{ ...style, whiteSpace: "pre", fontSize: size }}>{text}</div>
+  );
+};
 export const godzillaDefaults: ArtistGodzillaProps = {
   ...artistLADefaults,
   background: doohStaticAsset("assets/godzilla/insitu-background.png"),
@@ -313,7 +358,12 @@ const MovingCopy: React.FC<{
                     ),
             }}
           >
-            <div
+            <FittedCopy
+              text={values[i]}
+              maxWidth={Math.max(
+                1,
+                data.width - x - 47 - (i === 2 ? 68 * factor : 0),
+              )}
               style={{
                 ...plane,
                 left: x,
@@ -335,9 +385,7 @@ const MovingCopy: React.FC<{
                     }
                   : {}),
               }}
-            >
-              {values[i]}
-            </div>
+            />
           </div>
         );
       })}

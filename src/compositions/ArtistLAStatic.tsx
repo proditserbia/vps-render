@@ -149,7 +149,7 @@ export const ArtistLAStatic: React.FC<ArtistLAProps> = (props) => {
           fontFamily: "LAStaticDisplay",
           fontSize: sizes.artist,
           lineHeight: 1,
-          whiteSpace: "pre-line",
+          whiteSpace: "pre",
         }}
       >
         {props.artistName}
@@ -163,7 +163,7 @@ export const ArtistLAStatic: React.FC<ArtistLAProps> = (props) => {
           fontFamily: "LAStaticDisplay",
           fontSize: sizes.song,
           lineHeight: 1,
-          whiteSpace: "pre-line",
+          whiteSpace: "pre",
           color: "#466173",
         }}
       >
@@ -181,6 +181,7 @@ export const ArtistLAStatic: React.FC<ArtistLAProps> = (props) => {
           fontFamily: "LAStaticRoboto",
           fontSize: sizes.pill,
           lineHeight: 1.2,
+          whiteSpace: "pre",
         }}
       >
         {props.pillCopy}

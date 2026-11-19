@@ -1,3 +1,4 @@
+import { FittedDoohSvgText } from "../FittedDoohText";
 import { doohStaticAsset, DoohFonts } from "../doohAssets";
 import React from "react";
 import {
@@ -162,21 +163,18 @@ const Tracked: React.FC<{
           stroke={e.id.startsWith("closing") ? "white" : "#202020"}
           strokeWidth={10}
         />
-        <text
+        <FittedDoohSvgText
+          text={props.pillCopy}
+          prefix="Mega"
+          family="MegaRoboto"
+          baseSize={height * 0.52}
+          maxWidth={width * 0.85}
+          maxHeight={height * 0.52}
           x={width / 2}
           y={height * 0.69}
           textAnchor="middle"
-          fontFamily="MegaRoboto"
-          fontSize={height * 0.52}
           fill={e.id.startsWith("closing") ? "white" : "#202020"}
-          textLength={Math.min(
-            width * 0.85,
-            props.pillCopy.length * height * 0.28,
-          )}
-          lengthAdjust="spacingAndGlyphs"
-        >
-          {props.pillCopy}
-        </text>
+        />
       </svg>
     );
   else {
@@ -186,10 +184,6 @@ const Tracked: React.FC<{
       : e.kind === "title"
         ? "#142467"
         : "#202020";
-    const fit = Math.min(
-      1,
-      14 / Math.max(...text.split("\n").map((s) => s.length)),
-    );
     child = (
       <svg
         width={width}
@@ -197,15 +191,17 @@ const Tracked: React.FC<{
         viewBox={`0 0 ${width} ${height}`}
         overflow="visible"
       >
-        <text
+        <FittedDoohSvgText
+          text={text}
+          prefix="Mega"
+          family={e.kind === "title" ? "MegaBold" : "MegaExtra"}
+          baseSize={(e.fontSize ?? height) * 0.8}
+          maxWidth={width * 0.98}
+          maxHeight={height * 0.8}
           x={0}
           y={height * 0.8}
-          fontFamily={e.kind === "title" ? "MegaBold" : "MegaExtra"}
-          fontSize={(e.fontSize ?? height) * 0.8 * fit}
           fill={fill}
-        >
-          {text}
-        </text>
+        />
       </svg>
     );
   }

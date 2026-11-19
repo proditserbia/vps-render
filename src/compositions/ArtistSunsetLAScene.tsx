@@ -1,3 +1,4 @@
+import { FittedDoohText } from "../FittedDoohText";
 import { doohStaticAsset, DoohFonts } from "../doohAssets";
 import React from "react";
 import {
@@ -223,9 +224,15 @@ const Copy: React.FC<{
         start={video ? 317 : 24}
         settle={video}
       >
-        <div style={{ ...style, top, fontFamily: "LAExtra", fontSize: 172 }}>
-          {props.artistName}
-        </div>
+        <FittedDoohText
+          text={props.artistName}
+          prefix="LA"
+          family="LAExtra"
+          baseSize={172}
+          maxWidth={850}
+          maxHeight={props.artistName.includes("\n") ? 136 : 172}
+          style={{ ...style, top }}
+        />
       </TextPlane>
       <TextPlane
         track={titleTrack}
@@ -233,7 +240,13 @@ const Copy: React.FC<{
         start={video ? 339 : 41}
         settle={video}
       >
-        <div
+        <FittedDoohText
+          text={props.songTitle}
+          prefix="LA"
+          family="LABold"
+          baseSize={160}
+          maxWidth={850}
+          maxHeight={160}
           style={{
             ...style,
             top: top + 136 * scale,
@@ -247,12 +260,16 @@ const Copy: React.FC<{
               clamp,
             ),
           }}
-        >
-          {props.songTitle}
-        </div>
+        />
       </TextPlane>
       <TextPlane track={pillTrack} frame={frame} start={video ? 346 : 48}>
-        <span
+        <FittedDoohText
+          text={props.pillCopy}
+          prefix="LA"
+          family="LARoboto"
+          baseSize={46}
+          maxWidth={780}
+          maxHeight={46}
           style={{
             ...style,
             top: top + 340 * scale,
@@ -269,9 +286,7 @@ const Copy: React.FC<{
             ),
             borderRadius: 18,
           }}
-        >
-          {props.pillCopy}
-        </span>
+        />
       </TextPlane>
     </>
   );

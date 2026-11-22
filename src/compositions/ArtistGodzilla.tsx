@@ -203,12 +203,15 @@ const Bar: React.FC<{
   dot: number;
   height?: number;
   radius?: number;
-}> = ({ width, y, dot, height = 13, radius = height * 1.45 }) => (
+}> = ({ width, y, dot, height = 13, radius = height * 1.45 }) => {
+ const gradientId = React.useId().replace(/:/g, "");
+ return (
   <svg
     width={width}
     height={50}
     style={{ ...plane, top: y - 25, overflow: "visible" }}
   >
+    <defs><linearGradient id={gradientId} gradientUnits="userSpaceOnUse" x1={0} y1={25} x2={Math.max(1, dot)} y2={25}><stop offset="0%" stopColor="#ff0033"/><stop offset="100%" stopColor="#ff2a9b"/></linearGradient></defs>
     <line
       x1={0}
       y1={25}
@@ -222,12 +225,13 @@ const Bar: React.FC<{
       y1={25}
       x2={dot}
       y2={25}
-      stroke="#ff0060"
+      stroke={`url(#${gradientId})`}
       strokeWidth={height}
     />
-    <circle cx={dot} cy={25} r={radius} fill="#ff0033" />
+    <circle cx={dot} cy={25} r={radius} fill="#ff2a9b" />
   </svg>
 );
+};
 
 const MovingCopy: React.FC<{
   data: SceneData;
@@ -247,7 +251,7 @@ const MovingCopy: React.FC<{
     video ? data.videoPill : data.pill,
   ];
   const starts = opening
-    ? [13, 24, 40]
+    ? [13, 24, 36]
     : video
       ? [307, 327, 334]
       : [305, data.width > 1100 ? 344 : 342, 350];
@@ -264,7 +268,9 @@ const MovingCopy: React.FC<{
           ? (track ?? []).filter((r) => r[0] >= reliableFrom)
           : (track ?? []);
         if (!opening && !sideFade && t.length && frame < t[0][0]) return null;
-        let h = sample(t, frame);
+        // The earlier pill fade happens at its settled position, so its old
+        // entrance path cannot cross the title while both are visible.
+        let h = sample(t, opening && i === 2 && frame < 60 ? 60 : frame);
         if (video) {
           // Align browser glyph bounds with the settled AE plane before applying
           // perspective; a few baseline pixels amplify strongly during entry.
@@ -306,7 +312,7 @@ const MovingCopy: React.FC<{
           h = [...h];
           h[2] += u * 2500;
         }
-        if (!sideFade && t.length && frame < t[0][0]) {
+        if (!sideFade && !(opening && i === 2) && t.length && frame < t[0][0]) {
           const progress = interpolate(
             frame,
             [starts[i], t[0][0]],
@@ -314,7 +320,7 @@ const MovingCopy: React.FC<{
             clamp,
           );
           h = [...h];
-          h[2] -= (1 - progress) * (opening ? 600 : 850);
+          h[2] += (1 - progress) * (opening ? 600 : -850);
         }
         const top = opening
           ? [34, 223, 503][i]
@@ -323,6 +329,15 @@ const MovingCopy: React.FC<{
         // Normalize around the actual text, not the entire composition origin.
         if (h[6] * (x + 350) + h[7] * (top + 70) + h[8] < 0) {
           h = h.map((v) => -v);
+        }
+        // Mirror only the entry displacement, not the glyphs: the opening copy
+        // must approach its settled anchor from the right.
+        if (opening && i < 2 && frame < 60) {
+          const settled = sample(t, 60);
+          const [sx, sy, tx, ty] = copyCalibration.opening[i];
+          const projectX = (m: number[], px: number, py: number) => (m[0] * px + m[1] * py + m[2]) / (m[6] * px + m[7] * py + m[8]);
+          const delta = Math.max(0, projectX(settled, sx*x+tx, sy*top+ty) - projectX(h,x,top)) * 2;
+          h = [...h]; h[0] += delta * h[6]; h[1] += delta * h[7]; h[2] += delta * h[8];
         }
         const lines = values[i].split("\n");
         const longest = Math.max(1, ...lines.map((l) => l.length));
@@ -368,7 +383,7 @@ const MovingCopy: React.FC<{
                 ...plane,
                 left: x,
                 top,
-                color: video ? "white" : i === 1 ? "#142467" : "#202020",
+                color: i === 1 ? (props.songTitleColor ?? (video ? "white" : "#142467")) : video ? "white" : "#202020",
                 whiteSpace: "pre-line",
                 lineHeight: 1,
                 fontFamily:
@@ -398,6 +413,7 @@ const Scene: React.FC<{
   props: ArtistGodzillaProps;
   socialCenter?: boolean;
 }> = ({ name, props, socialCenter = false }) => {
+  const progressGradientId = React.useId().replace(/:/g, "");
   const { fps } = useVideoConfig();
   const frame = (useCurrentFrame() * 60) / fps;
   const data = scenes[name],
@@ -832,6 +848,7 @@ const Scene: React.FC<{
             height={834}
             style={{ ...plane, clipPath: outsidePhoto }}
           >
+            <defs><linearGradient id={progressGradientId} gradientUnits="userSpaceOnUse" x1={bar[0]} y1={bar[1]} x2={bar[2]} y2={bar[3]}><stop offset="0%" stopColor="#ff0033"/><stop offset="100%" stopColor="#ff2a9b"/></linearGradient></defs>
             <line
               x1={bar[0]}
               y1={bar[1]}
@@ -845,10 +862,10 @@ const Scene: React.FC<{
               y1={bar[1]}
               x2={bar[2]}
               y2={bar[3]}
-              stroke="#ff0060"
+              stroke={`url(#${progressGradientId})`}
               strokeWidth={26}
             />
-            <circle cx={bar[2]} cy={bar[3]} r={38} fill="#ff0033" />
+            <circle cx={bar[2]} cy={bar[3]} r={38} fill="#ff2a9b" />
           </svg>
         </div>
       )}

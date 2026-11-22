@@ -6,6 +6,7 @@ import { AbsoluteFill, Composition, Img } from "remotion";
 export type ArtistLAProps = {
   artistName: string;
   songTitle: string;
+  songTitleColor?: string;
   pillCopy: string;
   featuredArtistImage: string;
   featuredVideo: string;

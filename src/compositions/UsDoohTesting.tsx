@@ -62,7 +62,10 @@ export function resolveDoohProps(family: Family, props: Input): ArtistLAProps {
     }
     return value[field] as string;
   };
+  const color = props.songTitleColor === undefined ? undefined : slot("songTitleColor", "text", "value");
+  if (color !== undefined && !/^#[0-9a-f]{6}$/i.test(color)) throw new Error("Invalid song title color");
   return {
+    songTitleColor: color,
     artistName: slot("artistName", "text", "value"),
     songTitle: slot("songTitle", "text", "value"),
     pillCopy: slot("pillCopy", "text", "value"),

@@ -252,7 +252,7 @@ const Copy: React.FC<{
             top: top + 136 * scale,
             fontFamily: "LABold",
             fontSize: 160,
-            color: video ? "white" : "#142467",
+            color: props.songTitleColor ?? (video ? "white" : "#142467"),
             opacity: interpolate(
               frame,
               video ? [338, 342] : [40, 44],
@@ -299,9 +299,9 @@ export const ArtistSunsetLAScene: React.FC<ArtistLAProps> = (props) => {
   // The delivered AE sequence has distinct 60 FPS poses, including odd frames.
   // In-situ at 30 FPS samples the same timeline at every second master frame.
   const frame = (useCurrentFrame() * 60) / fps;
-  // Nov 13 feedback: gently sway while descending from 3 seconds.
+  // R2: hold until the measured artist/title exit begins at master frame 198.
   // Use the master timeline so 30 fps InSitu and 60 fps exports stay aligned.
-  const logoExit = interpolate(frame, [180, 250], [0, 1], clamp);
+  const logoExit = interpolate(frame, [198, 250], [0, 1], clamp);
   const logoExitX =
     -18 * Math.sin(2 * Math.PI * logoExit) * Math.sin(Math.PI * logoExit);
   const logoExitY = 160 * logoExit * logoExit;

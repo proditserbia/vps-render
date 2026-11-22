@@ -38,6 +38,25 @@ export function mapped(h: number[], [x, y]: Point) {
   const w = h[6] * x + h[7] * y + h[8];
   return [(h[0] * x + h[1] * y + h[2]) / w, (h[3] * x + h[4] * y + h[5]) / w];
 }
+
+/** Clip in homogeneous space before dividing by w. A rotating plane may cross
+ * the camera: connecting its four already-projected corners creates bow ties. */
+export function visiblePolygon(h: number[], width: number, height: number) {
+  let points = [[0,0],[width,0],[width,height],[0,height]].map(([x,y]) => [h[0]*x+h[1]*y+h[2],h[3]*x+h[4]*y+h[5],h[6]*x+h[7]*y+h[8]]);
+  const clip = (input: number[][], distance: (p: number[]) => number) => {
+    const output: number[][] = [];
+    input.forEach((b,i) => {
+      const a=input[(i+input.length-1)%input.length], da=distance(a), db=distance(b);
+      if ((da>=0)!==(db>=0)) {const t=da/(da-db);output.push(a.map((v,j)=>v+(b[j]-v)*t));}
+      if(db>=0)output.push(b);
+    });
+    return output;
+  };
+  points=clip(points,p=>p[2]-0.0001);
+  points=points.map(([x,y,w])=>[x/w,y/w]);
+  for(const distance of [(p:number[])=>p[0],(p:number[])=>8248-p[0],(p:number[])=>p[1],(p:number[])=>2864-p[1]])points=clip(points,distance);
+  return points;
+}
 export function rowAt(rows: number[][], frame: number) {
   let lo = 0,
     hi = rows.length - 1;

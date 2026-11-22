@@ -164,7 +164,7 @@ export const ArtistLAStatic: React.FC<ArtistLAProps> = (props) => {
           fontSize: sizes.song,
           lineHeight: 1,
           whiteSpace: "pre",
-          color: "#466173",
+          color: props.songTitleColor ?? "#466173",
         }}
       >
         {props.songTitle}

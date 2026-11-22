@@ -17,7 +17,7 @@ import { GodzillaSidePanel } from "./ArtistGodzilla";
 import { GodzillaGlass } from "./GodzillaGlass";
 import geometry from "../data/megazilla-geometry.json";
 import streetTrack from "../data/social-tracking.json";
-import { homography, matrix, rowAt } from "./megaProjection";
+import { homography, matrix, rowAt, visiblePolygon } from "./megaProjection";
 import { resolveDoohProps } from "./UsDoohTesting";
 
 type Element = {
@@ -63,15 +63,28 @@ function pose(e: Element, f: number) {
       p[1] += ((m[3] - m[1]) * 240) / 8779;
     });
   }
-  return {
-    corners,
-    opacity: r[8],
-    h: homography(Math.max(e.rect[2], 1), Math.max(e.rect[3], 1), corners),
-  };
+  let h = homography(Math.max(e.rect[2], 1), Math.max(e.rect[3], 1), corners);
+  // Tighten the copy stack in each element's local plane, so the adjustment
+  // follows its perspective throughout entry and exit rather than drifting.
+  const copyOffset: Record<string, number> = {openingTitle: -66, openingPill: -218, closingTitle: -45, closingPill: -115};
+  const offset = copyOffset[e.id] ?? 0;
+  h[2] += h[1] * offset; h[5] += h[4] * offset; h[8] += h[7] * offset;
+  const centerW = h[6] * e.rect[2] / 2 + h[7] * e.rect[3] / 2 + h[8];
+  if (centerW < 0) h = h.map(value => -value);
+  const determinant = h[0]*(h[4]*h[8]-h[5]*h[7])-h[1]*(h[3]*h[8]-h[5]*h[6])+h[2]*(h[3]*h[7]-h[4]*h[6]);
+  const w = h[6]*e.rect[2]/2+h[7]*e.rect[3]/2+h[8];
+  const frontFacing = Number.isFinite(determinant) && Math.abs(w)>0.0001 && determinant / (w*w*w)>0;
+  return { corners, opacity: r[8], h, frontFacing };
 }
 function maskAt(id: string, f: number) {
   const e = elements.find((x) => x.id === id)!;
-  const { corners } = pose(e, f);
+  const { corners, h, frontFacing } = pose(e, f);
+  if (!frontFacing) return "polygon(0 0,0 0,0 0)";
+  const ws = [h[8], h[6]*e.rect[2]+h[8], h[7]*e.rect[3]+h[8], h[6]*e.rect[2]+h[7]*e.rect[3]+h[8]];
+  if (ws.some(w => w <= 0.0001)) {
+    const polygon = visiblePolygon(h,e.rect[2],e.rect[3]);
+    return polygon.length >= 3 ? 'polygon('+polygon.map(p=>p[0]+'px '+p[1]+'px').join(',')+')' : 'polygon(0 0,0 0,0 0)';
+  }
   const pts = [corners[0], corners[1], corners[3], corners[2]];
   const near = (a: number[], b: number[]) => {
     const k = Math.min(0.12, 240 / Math.hypot(b[0] - a[0], b[1] - a[1]));
@@ -91,9 +104,10 @@ const Tracked: React.FC<{
   props: ArtistLAProps;
 }> = ({ element: e, frame, props }) => {
   const { fps } = useVideoConfig();
-  const { opacity, h } = pose(e, frame);
+  const { opacity, h, frontFacing } = pose(e, frame);
   const [, , width, height] = e.rect;
   if (
+    !frontFacing ||
     opacity < 0.001 ||
     !h.every(Number.isFinite) ||
     width < 0.01 ||
@@ -179,7 +193,7 @@ const Tracked: React.FC<{
     );
   else {
     const text = e.kind === "title" ? props.songTitle : props.artistName;
-    const fill = e.id.startsWith("closing")
+    const fill = e.kind === "title" && props.songTitleColor ? props.songTitleColor : e.id.startsWith("closing")
       ? "white"
       : e.kind === "title"
         ? "#142467"
@@ -209,24 +223,26 @@ const Tracked: React.FC<{
 };
 const Progress: React.FC<{ id: string; frame: number }> = ({ id, frame }) => {
   const e = elements.find((x) => x.id === id)!;
-  const { h } = pose(e, frame);
+  const { h, frontFacing } = pose(e, frame);
+  if (!frontFacing) return null;
   const w = e.rect[2],
     ht = e.rect[3];
   const photo = id === "photoMask";
   const y = ht * (photo ? 0.952 : 0.752);
+  const start = photo ? 0.62 : 0.05;
   const progress = photo
-    ? Math.min(0.95, 0.2 + (frame / 60) * 0.197)
+    ? start + (0.95 - start) * Math.min(0.95, 0.2 + (frame / 60) * 0.197)
     : Math.min(0.95, 0.46 + ((frame - 247) / (900 - 247)) * 0.5);
   return (
     <div style={{ ...plane, width: w, height: ht, transform: matrix(h) }}>
       <svg width={w} height={ht}>
         <path
-          d={`M${w * 0.05} ${y} H${w * 0.95}`}
+          d={`M${w * start} ${y} H${w * 0.95}`}
           stroke="#ffffff40"
           strokeWidth={14}
         />
         <path
-          d={`M${w * 0.05} ${y} H${w * progress}`}
+          d={`M${w * start} ${y} H${w * progress}`}
           stroke="#ff0060"
           strokeWidth={14}
         />

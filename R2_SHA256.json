@@ -1,0 +1,258 @@
+[
+  {
+    "path": "src/compositions/AiDreamCatV1.tsx",
+    "sha256": "5e18e779f9b4737dc41385e647d559d0d6085a65d9e6d53f3cadf1107330e21e"
+  },
+  {
+    "path": "src/compositions/ArtistGodzilla.tsx",
+    "sha256": "6049caef2d4403915291c36c0244a9514481dd0465d0886896f27e2627cd14d8"
+  },
+  {
+    "path": "src/compositions/ArtistGodzillaV1.tsx",
+    "sha256": "9db30a7db0d255e5996fc28d6a3fc19c8ee785a0540bb6b5964bd9164f1b84c5"
+  },
+  {
+    "path": "src/compositions/ArtistGodzillaV2.tsx",
+    "sha256": "ad580e96d08cb761e3c95f85d1c42b829725cd6a965769084b46471b1123db59"
+  },
+  {
+    "path": "src/compositions/ArtistGodzillaV3.tsx",
+    "sha256": "87d4b5e012fa6148211fc318b84808385e919ccdd28a80382aa4fba52a79a090"
+  },
+  {
+    "path": "src/compositions/ArtistGodzillaV4.tsx",
+    "sha256": "7f476be905e3d43877969b4a6ec235b143ce2cf5ba971d86c094cc9a63316050"
+  },
+  {
+    "path": "src/compositions/ArtistGodzillaV5.tsx",
+    "sha256": "c97e0c2c2206b551e8a16d8f89a2ecc7494be7adcb9aa4b6e813f2fbbf14f1fd"
+  },
+  {
+    "path": "src/compositions/ArtistGodzillaV6.tsx",
+    "sha256": "3eda5fcdf2c7876913d277528e666e6af9d5111602c16e25adc1dc2d7fe34fdc"
+  },
+  {
+    "path": "src/compositions/ArtistGodzillaV7.tsx",
+    "sha256": "55fd19b11f82bf00001980946821402d815acc085a7daa2ec73746456e757b4c"
+  },
+  {
+    "path": "src/compositions/ArtistGodzillaV8.tsx",
+    "sha256": "a8f19dc0ab68aecd6e53f4a73ec3758c0ebfe5c61d22e5cfac025eef2af72438"
+  },
+  {
+    "path": "src/compositions/ArtistGodzillaV9.tsx",
+    "sha256": "acc5a94d7675a1d92100c3d1c08f650176028e70929b46db5aaa6aa7fe34ad3e"
+  },
+  {
+    "path": "src/compositions/ArtistLAStatic.tsx",
+    "sha256": "a572b92e0e1b524c83fa73f7bbb5f4ef36430d2718ca13ffa978d5902b0633b0"
+  },
+  {
+    "path": "src/compositions/ArtistMegazilla.tsx",
+    "sha256": "cea21551713af9811f6713d86724322a39110aa09df989c539a829a884146192"
+  },
+  {
+    "path": "src/compositions/ArtistSunsetLA.tsx",
+    "sha256": "218b580f330b1332f59041c84e3f7fe33326e99fda2641f416c04953146ff229"
+  },
+  {
+    "path": "src/compositions/ArtistSunsetLAScene.tsx",
+    "sha256": "c9dab5e9c146ab7c76edf50ff9be884e8ad92491991b592435ff04961e432947"
+  },
+  {
+    "path": "src/compositions/godzilla-copy-calibration.json",
+    "sha256": "caaac1f08347d1c194984443702a24fd0d6a16a709addd323065625dd11ff910"
+  },
+  {
+    "path": "src/compositions/godzilla-glass-calibration-v3.json",
+    "sha256": "2d628732415beddbc0befc4f0d497067871601b9b869fb9ee4c0b3236f5125f0"
+  },
+  {
+    "path": "src/compositions/godzilla-glass-calibration.json",
+    "sha256": "651f9ebe97803ac58ebd9ee940d857998b21f047f10acc919bad9c4ff921281f"
+  },
+  {
+    "path": "src/compositions/godzilla-measured-v1.json",
+    "sha256": "750c39c6961136813aee4e4e59ee3e8a0cdfd382ca64fed0b7f32bd669561ab9"
+  },
+  {
+    "path": "src/compositions/godzilla-measured-v2.json",
+    "sha256": "5ac9bbe91f72d2fa579e170d7511eb9583225314627a83a76315d1d6a577830d"
+  },
+  {
+    "path": "src/compositions/godzilla-measured-v3.json",
+    "sha256": "9a0b32d2582538de2eb1031279256f8e0e38f1ffe351d65f309b26ea75b213d4"
+  },
+  {
+    "path": "src/compositions/godzilla-measured-v4.json",
+    "sha256": "e63607e33147861c41dd5e05e07617dcae931f83fdaaff20fcd9d4b7f10f31ed"
+  },
+  {
+    "path": "src/compositions/godzilla-measured-v5.json",
+    "sha256": "b2a83458864aeb05117f52e21f2326fa92fccb69d308af791588b52bd4cdf566"
+  },
+  {
+    "path": "src/compositions/godzilla-measured-v6.json",
+    "sha256": "b2a83458864aeb05117f52e21f2326fa92fccb69d308af791588b52bd4cdf566"
+  },
+  {
+    "path": "src/compositions/godzilla-measured-v7.json",
+    "sha256": "b2a83458864aeb05117f52e21f2326fa92fccb69d308af791588b52bd4cdf566"
+  },
+  {
+    "path": "src/compositions/godzilla-measured-v8.json",
+    "sha256": "b2a83458864aeb05117f52e21f2326fa92fccb69d308af791588b52bd4cdf566"
+  },
+  {
+    "path": "src/compositions/godzilla-measured-v9.json",
+    "sha256": "b2a83458864aeb05117f52e21f2326fa92fccb69d308af791588b52bd4cdf566"
+  },
+  {
+    "path": "src/compositions/godzilla-measured.json",
+    "sha256": "b2a83458864aeb05117f52e21f2326fa92fccb69d308af791588b52bd4cdf566"
+  },
+  {
+    "path": "src/compositions/godzilla-side-graphics-v6.json",
+    "sha256": "74319bda9a3234c619ccf6bc37d707351989cfe3a2e025415224d8cb7b4b7161"
+  },
+  {
+    "path": "src/compositions/godzilla-side-graphics-v7.json",
+    "sha256": "75faadc51302a1310797a86185a6c3f68dc338b05ac6f9b2c1bf213aa9672598"
+  },
+  {
+    "path": "src/compositions/godzilla-side-graphics-v8.json",
+    "sha256": "4b71763dd8e398ec8c640d81f236954e51de16ce67ee807938fdf486a69a1460"
+  },
+  {
+    "path": "src/compositions/godzilla-side-graphics-v9.json",
+    "sha256": "b4ca77df2864bc167143ca2f0a64bdc3d1d2917e79ea398d8b0723e6e6966fe5"
+  },
+  {
+    "path": "src/compositions/godzilla-side-graphics.json",
+    "sha256": "b4ca77df2864bc167143ca2f0a64bdc3d1d2917e79ea398d8b0723e6e6966fe5"
+  },
+  {
+    "path": "src/compositions/godzilla-side-warp.json",
+    "sha256": "388a0b5000ea8302c8f349c8d1f4c05f9454d9c1b7dae3f5c3e800fa9e585250"
+  },
+  {
+    "path": "src/compositions/GodzillaGlass.tsx",
+    "sha256": "06832ff09d29a91d61acad57849adadb641c16d2cb27e40f21d424b0d4d5cbf1"
+  },
+  {
+    "path": "src/compositions/GodzillaGlassV3.tsx",
+    "sha256": "9f0500f6807823eb4a625fb9f66d9d369bc344dd908b9b1d73077edcbb618140"
+  },
+  {
+    "path": "src/compositions/GodzillaSideWarp.tsx",
+    "sha256": "559a1d5b55ecd9701bf72ee9de3f93c7c5f083e995ef8e1686ac66ddf7ad6842"
+  },
+  {
+    "path": "src/compositions/la-buttons-refined.json",
+    "sha256": "eb82eb2824e2966857afd753360b0a5370f195c4cc7ed76a449e173b7a9619ae"
+  },
+  {
+    "path": "src/compositions/la-logo-refined.json",
+    "sha256": "98243d24a01c74eebf5da2fe974cd43f479325b5fc4a7896ad98defcb2d2c8bb"
+  },
+  {
+    "path": "src/compositions/la-motion-measured.json",
+    "sha256": "627f01eae671f468d883c3daccac597f1d33b5b9cbbf21de282e3fe4ef2764c5"
+  },
+  {
+    "path": "src/compositions/la-photo-refined.json",
+    "sha256": "b498a9d3fb2d00afa1f138e5fae2b81f33ca5ffcace6eef175070e5af77bd158"
+  },
+  {
+    "path": "src/compositions/la-playbar-measured.json",
+    "sha256": "9838ea05061268f4947c5104f68b9e71dc2bfbf48eb7f68e34597b76d01ed538"
+  },
+  {
+    "path": "src/compositions/la-video-entry-measured.json",
+    "sha256": "9d6cb276cff0f67c36d54f53c530c7ebecf92fece0fd75d9b342cecb2b9ade73"
+  },
+  {
+    "path": "src/compositions/la-video-mask-measured.json",
+    "sha256": "be8f44ad4a0ca5626fba7c3a8ba806ba82402d3aa77043b6563054d7cad40b60"
+  },
+  {
+    "path": "src/compositions/la-video-measured.json",
+    "sha256": "c324cf306d3ae8ef8ebc024577f78490e1818ad929564be0e3d17056c4311388"
+  },
+  {
+    "path": "src/compositions/la-video-plane-measured.json",
+    "sha256": "3563e9812ac2ed284c21274f2bcb6cb7c1dc3a224945afdc9f55e3ca48ed0f12"
+  },
+  {
+    "path": "src/compositions/la-white-name-fitted.json",
+    "sha256": "9a9722b780f619cef020e71289bd1ef8feced4cbf7c9964482011111222664f8"
+  },
+  {
+    "path": "src/compositions/la-white-name-refined.json",
+    "sha256": "ac92ee83361956d530c07b3060cb3ba0112d7e38354ac13d7f7038b34601dbed"
+  },
+  {
+    "path": "src/compositions/megaProjection.ts",
+    "sha256": "5f5b1fb1abc945103f7624c30cbed8462ab671124c84b384e2e0e978f4e5ef0c"
+  },
+  {
+    "path": "src/compositions/StreetSocial.tsx",
+    "sha256": "517631479bb93d931d1c35c030008ed7249184e458bda5dad2ac3e46d8a094c3"
+  },
+  {
+    "path": "src/compositions/UsDoohTesting.tsx",
+    "sha256": "9a310cf53f16cbd86a5a7e7f1d3664df7705dfce133b6143df80c389a58f8408"
+  },
+  {
+    "path": "src/compositions/VeoShortsV1.tsx",
+    "sha256": "340bf7ec7dda2d3023f164a3cc6ff457b1da704ab19290e41353d25ee7a4be3c"
+  },
+  {
+    "path": "src/data/megazilla-geometry.json",
+    "sha256": "879784c2445ac6300d085d8c7bea24baddb85a393ef69f78da71db09f2b7528d"
+  },
+  {
+    "path": "src/data/social-assets.json",
+    "sha256": "fe84e4e4eaef848b0a1baaa0369b3ea6cbc3f37d1ac517b00cafa6b972c72009"
+  },
+  {
+    "path": "src/data/social-tracking.json",
+    "sha256": "98f984f92e515bc77e8d525cf9c854f08ea0b0f5c7017d89c4badab83bf58e2f"
+  },
+  {
+    "path": "src/dooh-static-files.json",
+    "sha256": "b33a232e63545985a1140a0152786d9e4f2f23bc35b0a90318851759aa7551ab"
+  },
+  {
+    "path": "src/dooh-storage.json",
+    "sha256": "6f1338631c0f49486bec36f09bc4d5a52235c70bf34d791cf75f28d5109abbeb"
+  },
+  {
+    "path": "src/doohAssets.tsx",
+    "sha256": "a2e91c6b53630750e2d7f94dcc7b2ce0b985d83489b17314a468315c979a5544"
+  },
+  {
+    "path": "src/FittedDoohText.tsx",
+    "sha256": "525ae295091e1f3f1924e49c5da0d3be71a3bda2467d72f3d6321842e1d92896"
+  },
+  {
+    "path": "src/index.ts",
+    "sha256": "5462d3268136731ce43bfd7c5072ea1ba48b51fec94fa30076f5044f4b39e4a2"
+  },
+  {
+    "path": "src/Root.tsx",
+    "sha256": "51a27a26590be2fc540612530b9ee762ecc287ee2a36b605af2e4a836a3ef58f"
+  },
+  {
+    "path": "src/slotProps.ts",
+    "sha256": "99f7dca9a9c33e3b13a6a9e5a9a5e5d2ed89bc5f363f350e7f83954ecaa47c9b"
+  },
+  {
+    "path": "src/usDoohOutputs.json",
+    "sha256": "f1f9685b54c3a5074198d34e48fb9004fe79a789b1d82949d0b8a5d49ae778aa"
+  },
+  {
+    "path": "server.js",
+    "sha256": "173e523c88d8242ff3f88883ed315b016498986896e818214598336e0a7e191a"
+  }
+]

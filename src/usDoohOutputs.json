@@ -42,9 +42,10 @@
       "height": 1080,
       "fps": 30,
       "durationInFrames": 450,
-      "format": "mp4",
+      "format": "jpg",
       "label": "Static InSitu",
-      "audio": "none"
+      "audio": "none",
+      "frame": 25
     },
     "social": {
       "width": 1080,
@@ -125,6 +126,81 @@
       "format": "mp4",
       "label": "Social 9:16 — street preview",
       "audio": "ambient"
+    }
+  },
+  "mega": {
+    "flat": {
+      "width": 6276,
+      "height": 1432,
+      "fps": 30,
+      "durationInFrames": 450,
+      "format": "mp4",
+      "label": "Stitched flat preview",
+      "audio": "none"
+    },
+    "insitu": {
+      "width": 1920,
+      "height": 1080,
+      "fps": 30,
+      "durationInFrames": 450,
+      "format": "mp4",
+      "label": "Motion InSitu",
+      "audio": "none"
+    },
+    "panel01": {
+      "width": 2352,
+      "height": 1666,
+      "fps": 60,
+      "durationInFrames": 900,
+      "format": "mp4",
+      "label": "Far left · Panel 01",
+      "audio": "none"
+    },
+    "panel02": {
+      "width": 4124,
+      "height": 1666,
+      "fps": 60,
+      "durationInFrames": 900,
+      "format": "mp4",
+      "label": "Center left · Panel 02",
+      "audio": "none"
+    },
+    "panel03": {
+      "width": 4124,
+      "height": 1666,
+      "fps": 60,
+      "durationInFrames": 900,
+      "format": "mp4",
+      "label": "Center right · Panel 03",
+      "audio": "none"
+    },
+    "panel04": {
+      "width": 1952,
+      "height": 1666,
+      "fps": 60,
+      "durationInFrames": 900,
+      "format": "mp4",
+      "label": "Far right · Panel 04",
+      "audio": "none"
+    },
+    "panel05": {
+      "width": 4840,
+      "height": 1198,
+      "fps": 60,
+      "durationInFrames": 900,
+      "format": "mp4",
+      "label": "Bottom center · Panel 05",
+      "audio": "none"
+    },
+    "social": {
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "durationInFrames": 450,
+      "format": "mp4",
+      "label": "Social 9:16 — additional street preview",
+      "audio": "ambient",
+      "reviewOnly": true
     }
   }
 }

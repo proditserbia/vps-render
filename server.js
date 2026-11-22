@@ -229,7 +229,7 @@ async function executeRenderJob({jobId, composition, inputProps, outputFormat, c
   if (!jobId) {
     throw new Error('jobId is required for deterministic output filename');
   }
-  const isStill = composition === 'us-dooh-la-test-v1' && inputProps.outputVariant === 'static' && outputFormat === 'jpg';
+  const isStill = composition === 'us-dooh-la-test-v1' && ['static', 'static-insitu'].includes(inputProps.outputVariant) && outputFormat === 'jpg';
   if (outputFormat !== CANONICAL_OUTPUT_FORMAT && !isStill) {
     throw new Error(`Unsupported outputFormat "${outputFormat}". Only "${CANONICAL_OUTPUT_FORMAT}" is supported.`);
   }
@@ -538,7 +538,7 @@ app.post('/render', async (req, res) => {
   }
 
   if (attempt !== undefined && (!Number.isSafeInteger(attempt) || attempt < 1)) return res.status(400).json({error:'Invalid attempt'});
-  if (effectiveOutputFormat !== CANONICAL_OUTPUT_FORMAT && !(composition === 'us-dooh-la-test-v1' && inputProps.outputVariant === 'static' && effectiveOutputFormat === 'jpg')) {
+  if (effectiveOutputFormat !== CANONICAL_OUTPUT_FORMAT && !(composition === 'us-dooh-la-test-v1' && ['static', 'static-insitu'].includes(inputProps.outputVariant) && effectiveOutputFormat === 'jpg')) {
     log.error('Rejected: unsupported outputFormat', {outputFormat: effectiveOutputFormat});
     return res.status(422).json({
       error: `Unsupported outputFormat "${effectiveOutputFormat}". Only "${CANONICAL_OUTPUT_FORMAT}" is supported.`,

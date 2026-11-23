@@ -229,14 +229,15 @@ async function executeRenderJob({jobId, composition, inputProps, outputFormat, c
   if (!jobId) {
     throw new Error('jobId is required for deterministic output filename');
   }
-  const isStill = composition === 'us-dooh-la-test-v1' && ['static', 'static-insitu'].includes(inputProps.outputVariant) && outputFormat === 'jpg';
+  const isEmpPng = composition === 'emp-v1' && ['banner', 'banner-2x'].includes(inputProps.outputVariant) && outputFormat === 'png';
+  const isStill = isEmpPng || composition === 'us-dooh-la-test-v1' && ['static', 'static-insitu'].includes(inputProps.outputVariant) && outputFormat === 'jpg';
   if (outputFormat !== CANONICAL_OUTPUT_FORMAT && !isStill) {
     throw new Error(`Unsupported outputFormat "${outputFormat}". Only "${CANONICAL_OUTPUT_FORMAT}" is supported.`);
   }
   if (codec !== CANONICAL_CODEC) {
     throw new Error(`Unsupported codec "${codec}". Only "${CANONICAL_CODEC}" is supported.`);
   }
-  const filename = `${jobId}${attempt ? `-a${attempt}` : ''}.${isStill ? 'jpg' : CANONICAL_EXTENSION}`;
+  const filename = `${jobId}${attempt ? `-a${attempt}` : ''}.${isStill ? outputFormat : CANONICAL_EXTENSION}`;
   const outputPath = path.join(OUTPUT_DIR, filename);
 
   let interval = null;
@@ -332,7 +333,8 @@ async function executeRenderJob({jobId, composition, inputProps, outputFormat, c
         concurrency: 1, scale: 1,
       });
     }
-    if (!isUsDooh && RENDER_SCALE !== 1) {
+    if (composition === 'emp-v1') Object.assign(renderOptions, {scale:1, concurrency:1, muted:false, videoBitrate:'15M', pixelFormat:'yuv420p', colorSpace:'bt709'});
+    if (!isUsDooh && composition !== 'emp-v1' && RENDER_SCALE !== 1) {
       renderOptions.scale = RENDER_SCALE;
     }
 
@@ -343,7 +345,7 @@ async function executeRenderJob({jobId, composition, inputProps, outputFormat, c
       };
     }
 
-    if (isStill) await renderStill({serveUrl,composition:selectedComposition,inputProps,frame:25,imageFormat:'jpeg',jpegQuality:100,output:outputPath});
+    if (isStill) await renderStill({serveUrl,composition:selectedComposition,inputProps,frame:isEmpPng ? 0 : 25,imageFormat:isEmpPng ? 'png' : 'jpeg',...(isEmpPng ? {} : {jpegQuality:100}),output:outputPath});
     else await renderMedia(renderOptions);
 
     const elapsedMs = Date.now() - startedAt;
@@ -353,6 +355,7 @@ async function executeRenderJob({jobId, composition, inputProps, outputFormat, c
       throw new Error('Output file was not created');
     }
     const stats = fs.statSync(outputPath);
+    if (isEmpPng && stats.size >= 300 * 1024) throw new Error('EMP banner exceeds 300 KB');
     if (stats.size === 0) {
       throw new Error('Output file is empty');
     }
@@ -538,7 +541,7 @@ app.post('/render', async (req, res) => {
   }
 
   if (attempt !== undefined && (!Number.isSafeInteger(attempt) || attempt < 1)) return res.status(400).json({error:'Invalid attempt'});
-  if (effectiveOutputFormat !== CANONICAL_OUTPUT_FORMAT && !(composition === 'us-dooh-la-test-v1' && ['static', 'static-insitu'].includes(inputProps.outputVariant) && effectiveOutputFormat === 'jpg')) {
+  if (effectiveOutputFormat !== CANONICAL_OUTPUT_FORMAT && !(composition === 'emp-v1' && ['banner', 'banner-2x'].includes(inputProps.outputVariant) && effectiveOutputFormat === 'png') && !(composition === 'us-dooh-la-test-v1' && ['static', 'static-insitu'].includes(inputProps.outputVariant) && effectiveOutputFormat === 'jpg')) {
     log.error('Rejected: unsupported outputFormat', {outputFormat: effectiveOutputFormat});
     return res.status(422).json({
       error: `Unsupported outputFormat "${effectiveOutputFormat}". Only "${CANONICAL_OUTPUT_FORMAT}" is supported.`,

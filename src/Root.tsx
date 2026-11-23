@@ -1,4 +1,5 @@
 import { UsDoohTestingCompositions } from "./compositions/UsDoohTesting";
+import { EmpCompositions } from "./compositions/ArtistEMP";
 import { MegazillaCompositions } from "./compositions/ArtistMegazilla";
 import { ArtistLACompositions } from "./compositions/ArtistSunsetLA";
 import { GodzillaCompositions as GodzillaV1Compositions } from "./compositions/ArtistGodzillaV1";
@@ -23,6 +24,7 @@ export const RemotionRoot: React.FC = () => {
   return (
     <>
       <UsDoohTestingCompositions />
+      <EmpCompositions />
       <MegazillaCompositions />
       <ArtistLACompositions />
       <GodzillaV1Compositions />

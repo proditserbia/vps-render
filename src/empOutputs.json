@@ -1,0 +1,56 @@
+{
+  "landscape-10": {
+    "label": "Landscape 10s",
+    "format": "mp4",
+    "width": 1920,
+    "height": 1080,
+    "fps": 29.97002997002997,
+    "durationInFrames": 300,
+    "audio": "full-mix"
+  },
+  "landscape-15": {
+    "label": "Landscape 15s",
+    "format": "mp4",
+    "width": 1920,
+    "height": 1080,
+    "fps": 29.97002997002997,
+    "durationInFrames": 450,
+    "audio": "full-mix"
+  },
+  "social-10": {
+    "label": "Social 10s",
+    "format": "mp4",
+    "width": 1080,
+    "height": 1920,
+    "fps": 29.97002997002997,
+    "durationInFrames": 300,
+    "audio": "full-mix"
+  },
+  "social-15": {
+    "label": "Social 15s",
+    "format": "mp4",
+    "width": 1080,
+    "height": 1920,
+    "fps": 29.97002997002997,
+    "durationInFrames": 450,
+    "audio": "full-mix"
+  },
+  "banner": {
+    "label": "Companion banner",
+    "format": "png",
+    "width": 300,
+    "height": 60,
+    "fps": 30,
+    "durationInFrames": 1,
+    "audio": "none"
+  },
+  "banner-2x": {
+    "label": "Companion banner @2X",
+    "format": "png",
+    "width": 600,
+    "height": 120,
+    "fps": 30,
+    "durationInFrames": 1,
+    "audio": "none"
+  }
+}

@@ -16,6 +16,7 @@ import {
 } from "remotion";
 import { GodzillaSideWarp } from "./GodzillaSideWarp";
 import measured from "./godzilla-measured.json";
+import logoEntry from "./godzilla-logo-entry.json";
 import copyCalibration from "./godzilla-copy-calibration.json";
 import sideGraphics from "./godzilla-side-graphics.json";
 import { GodzillaGlass } from "./GodzillaGlass";
@@ -383,7 +384,7 @@ const MovingCopy: React.FC<{
                 ...plane,
                 left: x,
                 top,
-                color: i === 1 ? (props.songTitleColor ?? (video ? "white" : "#142467")) : video ? "white" : "#202020",
+                color: video ? "white" : i === 1 ? (props.songTitleColor ?? "#142467") : "#202020",
                 whiteSpace: "pre-line",
                 lineHeight: 1,
                 fontFamily:
@@ -494,10 +495,8 @@ const Scene: React.FC<{
   const sideButtonHeight = name === "left" ? 52 : 50;
   const sideButtonX = name === "left" ? 49 : 47;
   const sideButtonY = name === "left" ? 482 : 485;
-  const logoH =
-    data.logo?.length && frame >= data.logo[0][0]
-      ? sample(data.logo, frame)
-      : uiH;
+  // The incoming logo has its own AE motion, independent of the video plane.
+  const logoH = center ? sample([...logoEntry, ...(data.logo ?? [])], frame) : identity;
   const buttonsH =
     data.buttons?.length && frame >= data.buttons[0][0]
       ? sample(data.buttons, frame)
@@ -791,26 +790,6 @@ const Scene: React.FC<{
                   width: 4124,
                   height: 834,
                   zIndex: 2,
-                  transform: matrix(logoH),
-                }}
-              >
-                <div
-                  style={{
-                    ...plane,
-                    transform: socialCenter
-                      ? "translateY(72px) scaleY(0.5824) translateY(-72px)"
-                      : undefined,
-                  }}
-                >
-                  <Logo x={3400} y={72} width={550} white />
-                </div>
-              </div>
-              <div
-                style={{
-                  ...plane,
-                  width: 4124,
-                  height: 834,
-                  zIndex: 2,
                   transform: matrix(buttonsH),
                 }}
               >
@@ -832,6 +811,30 @@ const Scene: React.FC<{
             </div>
           )}
         </Sequence>
+      )}
+      {center && frame >= logoEntry[0][0] && (
+        <div style={{ ...plane, width: 4124, height: 834, clipPath: outsidePhoto }}>
+              <div
+                style={{
+                  ...plane,
+                  width: 4124,
+                  height: 834,
+                  zIndex: 2,
+                  transform: matrix(logoH),
+                }}
+              >
+                <div
+                  style={{
+                    ...plane,
+                    transform: socialCenter
+                      ? "translateY(72px) scaleY(0.5824) translateY(-72px)"
+                      : undefined,
+                  }}
+                >
+                  <Logo x={3400} y={72} width={550} white />
+                </div>
+              </div>
+        </div>
       )}
       {center && mask && frame >= 266 && (
         <div

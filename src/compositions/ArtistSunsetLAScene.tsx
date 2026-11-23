@@ -252,7 +252,7 @@ const Copy: React.FC<{
             top: top + 136 * scale,
             fontFamily: "LABold",
             fontSize: 160,
-            color: props.songTitleColor ?? (video ? "white" : "#142467"),
+            color: video ? "white" : (props.songTitleColor ?? "#142467"),
             opacity: interpolate(
               frame,
               video ? [338, 342] : [40, 44],

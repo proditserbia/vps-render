@@ -13,7 +13,7 @@ import {openBrowser, selectComposition, renderStill, renderMedia} from '@remotio
 const require=createRequire(import.meta.url);
 const webpack=require('webpack');
 const root=process.cwd();
-const out=path.join(root,process.env.EMP_FULL_MIX==='1'?'out/emp-fullmix-test':process.env.EMP_LONG==='1'?'out/emp-longtext-v2':'out/emp-review-v2');
+const out=path.join(root,process.env.EMP_FULL_MIX==='1'?'out/emp-fullmix-test':process.env.EMP_LONG==='1'?'out/emp-longtext-v2':'out/emp-review-v3-final');
 await fs.mkdir(path.join(out,'empty-public'),{recursive:true});
 const config=JSON.parse(await fs.readFile('src/dooh-storage.json','utf8'));
 const files=JSON.parse(await fs.readFile('src/dooh-static-files.json','utf8'));

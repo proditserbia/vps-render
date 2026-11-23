@@ -13,7 +13,8 @@ import { EmpAudio } from "./EmpAudio";
 import { EmpBrand, empCopyMotion } from "./EmpMotion";
 import outputs from "../empOutputs.json";
 import geometry from "../data/emp-geometry.json";
-import { homography, matrix, rowAt } from "./megaProjection";
+import { matrix } from "./megaProjection";
+import { empPlaneAt } from "./empProjection";
 import { DoohFonts, doohStaticAsset } from "../doohAssets";
 import { FittedDoohText } from "../FittedDoohText";
 
@@ -279,17 +280,8 @@ export const ArtistEMP: React.FC<EmpInput> = (input) => {
         short={short}
       />
       {[...scene.planes].reverse().map((plane, index) => {
-        const row = rowAt(plane.rows, f),
-          corners = [
-            row.slice(0, 2),
-            row.slice(2, 4),
-            row.slice(4, 6),
-            row.slice(6, 8),
-          ];
-        if (row[8] < 0.001) return null;
-        let h = homography(plane.width, plane.height, corners);
-        const w = (h[6] * plane.width) / 2 + (h[7] * plane.height) / 2 + h[8];
-        if (w < 0) h = h.map((v) => -v);
+        const { h, opacity } = empPlaneAt(plane, f, scene);
+        if (opacity < 0.001) return null;
         const det =
           h[0] * (h[4] * h[8] - h[5] * h[7]) -
           h[1] * (h[3] * h[8] - h[5] * h[6]) +
@@ -305,7 +297,7 @@ export const ArtistEMP: React.FC<EmpInput> = (input) => {
               width: plane.width,
               height: plane.height,
               transform: matrix(h),
-              opacity: row[8],
+              opacity,
               overflow: "hidden",
               background: bookend ? copy.backgroundColor : undefined,
             }}

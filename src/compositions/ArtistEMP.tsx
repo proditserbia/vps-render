@@ -1,16 +1,16 @@
 import React from "react";
 import {
   AbsoluteFill,
-  Audio,
   Composition,
   Img,
   OffthreadVideo,
   Sequence,
-  interpolate,
   staticFile,
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
+import { EmpAudio } from "./EmpAudio";
+import { EmpBrand, empCopyMotion } from "./EmpMotion";
 import outputs from "../empOutputs.json";
 import geometry from "../data/emp-geometry.json";
 import { homography, matrix, rowAt } from "./megaProjection";
@@ -152,8 +152,9 @@ const CopyBlock: React.FC<{
   copy: Copy;
   vertical: boolean;
   video: boolean;
-  opacity: number;
-}> = ({ copy, vertical, video, opacity }) => {
+  profile: "landscape-10" | "landscape-15" | "social-10" | "social-15";
+  motionTime: number;
+}> = ({ copy, vertical, video, profile, motionTime }) => {
   const artist =
     vertical && copy.verticalArtist ? copy.verticalArtist : copy.artistName;
   const title =
@@ -164,40 +165,52 @@ const CopyBlock: React.FC<{
       style={{
         position: "absolute",
         left: vertical ? 80 : 130,
-        top: vertical ? 620 : 170,
+        top: vertical ? 620 : 180,
         width: vertical ? 820 : 1150,
-        opacity,
         color,
       }}
     >
-      <Fit
-        text={artist}
-        bold
-        size={vertical ? 104 : 102}
-        width={vertical ? 820 : 1150}
-        height={vertical ? 220 : 110}
-      />
-      <Fit
-        text={title}
-        size={vertical ? 100 : 96}
-        width={vertical ? 820 : 1150}
-        height={vertical ? 210 : 110}
-        style={{ color: video ? color : copy.songTitleColor, marginTop: 5 }}
-      />
+      <div
+        style={video ? undefined : empCopyMotion(profile, "artist", motionTime)}
+      >
+        <Fit
+          text={artist}
+          bold
+          size={vertical ? 104 : 114}
+          width={vertical ? 820 : 1150}
+          height={vertical ? 220 : 120}
+          style={{ marginBottom: vertical ? 0 : "-.1em" }}
+        />
+      </div>
+      <div
+        style={video ? undefined : empCopyMotion(profile, "title", motionTime)}
+      >
+        <Fit
+          text={title}
+          size={vertical ? 100 : 108}
+          width={vertical ? 820 : 1150}
+          height={vertical ? 210 : 110}
+          style={{
+            color: video ? color : copy.songTitleColor,
+            marginTop: vertical ? 5 : 0,
+          }}
+        />
+      </div>
       <div
         style={{
+          ...(video ? {} : empCopyMotion(profile, "pill", motionTime)),
           display: "inline-block",
-          marginTop: 26,
+          marginTop: vertical ? 26 : 38,
           border: "3px solid currentColor",
           borderRadius: 8,
-          padding: "6px 12px",
+          padding: vertical ? "6px 12px" : "7px 12px",
         }}
       >
         <FittedDoohText
           text={copy.pillCopy}
           prefix="Mega"
           family="MegaRoboto"
-          baseSize={26}
+          baseSize={vertical ? 26 : 28}
           maxWidth={vertical ? 730 : 1000}
           maxHeight={36}
           style={{}}
@@ -252,26 +265,19 @@ export const ArtistEMP: React.FC<EmpInput> = (input) => {
   const vertical = variant.startsWith("social"),
     short = variant.endsWith("-10");
   const time = f / fps,
-    photoEntry = short ? 0 : 3.35,
     videoEntry = short ? 3.3 : 6.8;
   const audio = short ? copy.fullAudio10 : copy.fullAudio15;
-  const linerStart = short ? 0.55 : 4.04;
-  const voiceActive = time >= linerStart - 0.15 && time < linerStart + 3.8;
   return (
     <AbsoluteFill
       style={{ background: copy.backgroundColor, overflow: "hidden" }}
     >
       <DoohFonts prefix="Mega" />
-      {/* A supplied duration-specific full mix replaces source-video audio, never doubles it. */}
-      <Audio
-        src={src(audio || copy.featuredVideo)}
-        volume={audio || !copy.artistLiner ? 1 : voiceActive ? 0.25 : 0.8}
+      <EmpAudio
+        music={src(copy.featuredVideo)}
+        fullMix={audio ? src(audio) : ""}
+        liner={copy.artistLiner ? src(copy.artistLiner) : ""}
+        short={short}
       />
-      {!audio && copy.artistLiner && (
-        <Sequence from={Math.round(linerStart * fps)} layout="none">
-          <Audio src={src(copy.artistLiner)} />
-        </Sequence>
-      )}
       {[...scene.planes].reverse().map((plane, index) => {
         const row = rowAt(plane.rows, f),
           corners = [
@@ -291,12 +297,6 @@ export const ArtistEMP: React.FC<EmpInput> = (input) => {
         if (!h.every(Number.isFinite) || det <= 0) return null;
         const video = plane.kind === "video",
           bookend = plane.kind === "bookend";
-        const fade = interpolate(
-          time,
-          [photoEntry, photoEntry + 0.35],
-          [0, 1],
-          { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
-        );
         return (
           <div
             key={index}
@@ -311,23 +311,7 @@ export const ArtistEMP: React.FC<EmpInput> = (input) => {
             }}
           >
             {bookend ? (
-              <div
-                style={{
-                  opacity: short
-                    ? 1
-                    : interpolate(time, [0.2, 0.65], [0, 1], {
-                        extrapolateLeft: "clamp",
-                        extrapolateRight: "clamp",
-                      }),
-                  transform: `translateY(${short ? 0 : interpolate(time, [0.2, 1.1], [45, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })}px)`,
-                }}
-              >
-                <Logo
-                  x={(plane.width - 520) / 2}
-                  y={(plane.height - 116) / 2}
-                  width={520}
-                />
-              </div>
+              <EmpBrand time={short ? 2 : Math.min(time, 2)} />
             ) : (
               <div
                 style={{
@@ -380,7 +364,18 @@ export const ArtistEMP: React.FC<EmpInput> = (input) => {
                   copy={copy}
                   vertical={vertical}
                   video={video}
-                  opacity={video ? 1 : fade}
+                  profile={
+                    variant as
+                      | "landscape-10"
+                      | "landscape-15"
+                      | "social-10"
+                      | "social-15"
+                  }
+                  motionTime={
+                    time -
+                    scene.planes.find((p) => p.kind === "photo")!.start -
+                    10 / 3
+                  }
                 />
               </div>
             )}

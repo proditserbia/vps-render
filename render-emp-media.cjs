@@ -10,6 +10,8 @@ const execFileAsync = promisify(execFile);
 // No source offset or timeline compensation is applied. Video is copied unchanged.
 async function renderEmpMedia(options) {
   const output = path.resolve(options.outputLocation);
+  // /tmp output directories may be absent after a reboot or cleanup.
+  await fs.mkdir(path.dirname(output), {recursive: true});
   const temp = await fs.mkdtemp(path.join(path.dirname(output), '.emp-audio-'));
   try {
     const intermediate = path.join(temp, 'render.mov');

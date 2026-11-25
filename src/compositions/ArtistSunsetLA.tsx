@@ -7,6 +7,7 @@ export type ArtistLAProps = {
   artistName: string;
   songTitle: string;
   songTitleColor?: string;
+  videoStartMs?: number;
   pillCopy: string;
   featuredArtistImage: string;
   featuredVideo: string;

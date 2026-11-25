@@ -13,6 +13,7 @@ const {
 } = require('@remotion/renderer');
 const os = require('os');
 const fs = require('fs');
+const {renderEmpMedia} = require('./render-emp-media.cjs');
 
 const app = express();
 app.use(express.json({limit: '10mb'}));
@@ -346,6 +347,7 @@ async function executeRenderJob({jobId, composition, inputProps, outputFormat, c
     }
 
     if (isStill) await renderStill({serveUrl,composition:selectedComposition,inputProps,frame:isEmpPng ? 0 : 25,imageFormat:isEmpPng ? 'png' : 'jpeg',...(isEmpPng ? {} : {jpegQuality:100}),output:outputPath});
+    else if (composition === 'emp-v1') await renderEmpMedia(renderOptions);
     else await renderMedia(renderOptions);
 
     const elapsedMs = Date.now() - startedAt;

@@ -64,7 +64,11 @@ export function resolveDoohProps(family: Family, props: Input): ArtistLAProps {
   };
   const color = props.songTitleColor === undefined ? undefined : slot("songTitleColor", "text", "value");
   if (color !== undefined && !/^#[0-9a-f]{6}$/i.test(color)) throw new Error("Invalid song title color");
+  const start = props.videoStartMs as {type?:string;value?:number} | undefined;
+  if (start !== undefined && (!start || start.type !== "number" || !Number.isSafeInteger(start.value) || start.value! < 0))
+    throw new Error("Invalid videoStartMs: use non-negative integer milliseconds");
   return {
+    videoStartMs: start?.value ?? 0,
     songTitleColor: color,
     artistName: slot("artistName", "text", "value"),
     songTitle: slot("songTitle", "text", "value"),

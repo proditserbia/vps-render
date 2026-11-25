@@ -1,3 +1,4 @@
+import {DoohVideo} from "../DoohVideo";
 import megazillaLogoEntry from "./megazilla-logo-entry.json";
 import { FittedDoohSvgText } from "../FittedDoohText";
 import { doohStaticAsset, DoohFonts } from "../doohAssets";
@@ -136,7 +137,8 @@ const Tracked: React.FC<{
   else if (e.kind === "video")
     child = (
       <Sequence from={Math.round((247 / 60) * fps)} layout="none">
-        <OffthreadVideo
+        <DoohVideo
+          videoStartMs={props.videoStartMs}
           src={asset(props.featuredVideo)}
           muted
           style={{ width: "100%", height: "100%", objectFit: "cover" }}

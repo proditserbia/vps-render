@@ -10,6 +10,8 @@ import {
   useVideoConfig,
 } from "remotion";
 import { EmpAudio } from "./EmpAudio";
+import {empTiming, readEmpStart, validateEmpSource} from './empTiming';
+import {empPalette} from './empPalette';
 import { EmpBrand, empCopyMotion } from "./EmpMotion";
 import outputs from "../empOutputs.json";
 import geometry from "../data/emp-geometry.json";
@@ -19,7 +21,7 @@ import { DoohFonts, doohStaticAsset } from "../doohAssets";
 import { FittedDoohText } from "../FittedDoohText";
 
 type Variant = keyof typeof outputs;
-type Slot = string | { type?: string; value?: string; uri?: string };
+type Slot = string | { type?: string; value?: string | number; uri?: string };
 export type EmpInput = {
   outputVariant?: string;
   [key: string]: Slot | undefined;
@@ -44,34 +46,28 @@ type Copy = {
 };
 const read = (p: EmpInput, key: string, fallback = "") => {
   const v = p[key];
-  return (typeof v === "string" ? v : (v?.value ?? v?.uri ?? fallback)).trim();
+  const value = typeof v === "string" ? v : (v?.value ?? v?.uri ?? fallback);
+  if (typeof value !== 'string') throw new Error(`Invalid ${key}`);
+  return value.trim();
 };
 export function resolveEmp(p: EmpInput): Copy {
+  readEmpStart(p.emp10InMs); readEmpStart(p.emp15InMs);
   const result: Record<string, string> = {};
   for (const key of [
     "artistName",
     "songTitle",
     "pillCopy",
     "featuredArtistImage",
-    "featuredVideo",
   ]) {
     result[key] = read(p, key);
     if (!result[key]) throw new Error(`EMP requires ${key}`);
   }
   for (const key of ["artistName", "songTitle", "pillCopy"])
     if (result[key].length > 160) throw new Error(`${key} is too long`);
-  for (const [key, fallback] of Object.entries({
-    songTitleColor: "#ff8732",
-    textColor: "#ffffff",
-    videoTextColor: "#ffffff",
-    bannerColor: "#ff8732",
-    bannerTextColor: "#ffffff",
-    backgroundColor: "#ffffff",
-  })) {
-    result[key] = read(p, key, fallback);
-    if (!/^#[0-9a-f]{6}$/i.test(result[key])) throw new Error(`Invalid ${key}`);
-  }
+  // Ignore legacy role overrides on retries; current renders follow the fixed design.
+  Object.assign(result,empPalette(read(p,'songTitleColor','#ff8732')));
   for (const key of [
+    "featuredVideo",
     "verticalArtist",
     "verticalTitle",
     "fullAudio10",
@@ -81,6 +77,8 @@ export function resolveEmp(p: EmpInput): Copy {
     result[key] = read(p, key);
   for (const key of ["verticalArtist", "verticalTitle"])
     if (result[key].length > 160) throw new Error(`${key} is too long`);
+  if (!result.featuredVideo && (readEmpStart(p.emp10InMs)!==0 || readEmpStart(p.emp15InMs)!==0))
+    throw new Error('EMP source start requires a featured video');
   return result as Copy;
 }
 export const empDefaults: EmpInput = {
@@ -88,7 +86,8 @@ export const empDefaults: EmpInput = {
   songTitle: "Look at My Life",
   pillCopy: "New Song",
   featuredArtistImage: "assets/emp/artist.jpg",
-  featuredVideo: "assets/emp/video.mp4",
+  // Missing PMV must never silently pick up the local demo video.
+  featuredVideo: "",
   outputVariant: "landscape-15",
 };
 const src = (value: string) =>
@@ -180,7 +179,7 @@ const CopyBlock: React.FC<{
           size={vertical ? 104 : 114}
           width={vertical ? 820 : 1150}
           height={vertical ? 220 : 120}
-          style={{ marginBottom: vertical ? 0 : "-.1em" }}
+          style={{ marginBottom: vertical ? "-.08em" : "-.1em" }}
         />
       </div>
       <div
@@ -193,7 +192,7 @@ const CopyBlock: React.FC<{
           height={vertical ? 210 : 110}
           style={{
             color: video ? color : copy.songTitleColor,
-            marginTop: vertical ? 5 : 0,
+            marginTop: 0,
           }}
         />
       </div>
@@ -201,7 +200,7 @@ const CopyBlock: React.FC<{
         style={{
           ...(video ? {} : empCopyMotion(profile, "pill", motionTime)),
           display: "inline-block",
-          marginTop: vertical ? 26 : 38,
+          marginTop: vertical ? 56 : 38,
           border: "3px solid currentColor",
           borderRadius: 8,
           padding: vertical ? "6px 12px" : "7px 12px",
@@ -265,8 +264,8 @@ export const ArtistEMP: React.FC<EmpInput> = (input) => {
   const scene = geometry[variant as keyof typeof geometry];
   const vertical = variant.startsWith("social"),
     short = variant.endsWith("-10");
-  const time = f / fps,
-    videoEntry = short ? 3.3 : 6.8;
+  const time = f / fps;
+  const timing = empTiming(readEmpStart(input[short ? 'emp10InMs' : 'emp15InMs']), short);
   const audio = short ? copy.fullAudio10 : copy.fullAudio15;
   return (
     <AbsoluteFill
@@ -274,10 +273,11 @@ export const ArtistEMP: React.FC<EmpInput> = (input) => {
     >
       <DoohFonts prefix="Mega" />
       <EmpAudio
-        music={src(copy.featuredVideo)}
+        music={copy.featuredVideo ? src(copy.featuredVideo) : ''}
         fullMix={audio ? src(audio) : ""}
         liner={copy.artistLiner ? src(copy.artistLiner) : ""}
         short={short}
+        musicStartFrame={timing.startFrame}
       />
       {[...scene.planes].reverse().map((plane, index) => {
         const { h, opacity } = empPlaneAt(plane, f, scene);
@@ -317,11 +317,11 @@ export const ArtistEMP: React.FC<EmpInput> = (input) => {
                   background: copy.backgroundColor,
                 }}
               >
-                {video ? (
-                  <Sequence from={Math.floor(videoEntry * fps)} layout="none">
+                {video && copy.featuredVideo ? (
+                  <Sequence from={timing.revealFrame} layout="none">
                     <OffthreadVideo
                       src={src(copy.featuredVideo)}
-                      trimBefore={Math.floor(videoEntry * fps)}
+                      trimBefore={timing.videoTrimBefore}
                       muted
                       style={{
                         width: "100%",
@@ -342,8 +342,11 @@ export const ArtistEMP: React.FC<EmpInput> = (input) => {
                 )}
                 <AbsoluteFill
                   style={{
-                    background:
-                      "linear-gradient(120deg,rgba(0,0,0,.25),transparent 70%)",
+                    // Localized scrim travels with the media plane and remains beneath copy.
+                    background: vertical
+                      ? 'linear-gradient(180deg,transparent 15%,rgba(0,0,0,.42) 30%,rgba(0,0,0,.42) 60%,transparent 80%)'
+                      : 'linear-gradient(90deg,rgba(0,0,0,.42),rgba(0,0,0,.28) 48%,transparent 82%)',
+                    pointerEvents:'none',
                   }}
                 />
                 <Logo
@@ -386,10 +389,15 @@ export const EmpCompositions = () => (
     height={1080}
     fps={30000 / 1001}
     durationInFrames={450}
-    calculateMetadata={({ props }) => {
-      resolveEmp(props as EmpInput);
+    calculateMetadata={async ({ props }) => {
+      const copy = resolveEmp(props as EmpInput);
       const spec = outputs[(props.outputVariant ?? "landscape-15") as Variant];
       if (!spec) throw new Error("Unknown EMP output");
+      if (spec.format !== 'png' && copy.featuredVideo) {
+        const short = String(props.outputVariant).endsWith('-10');
+        const timing = empTiming(readEmpStart(props[short ? 'emp10InMs' : 'emp15InMs']), short);
+        await validateEmpSource(src(copy.featuredVideo), timing.requiredSeconds);
+      }
       return {
         width: spec.width,
         height: spec.height,

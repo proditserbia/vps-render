@@ -5,9 +5,9 @@ import {
   cancelRender,
   continueRender,
   delayRender,
-  interpolate,
   useVideoConfig,
 } from "remotion";
+import {empMusicLevel,empVoiceLevel} from './empAudioLevels';
 
 const durations = new Map<string, Promise<number>>();
 function audioDuration(url: string): Promise<number> {
@@ -45,14 +45,14 @@ function audioDuration(url: string): Promise<number> {
   return pending;
 }
 
-const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 /** Full mixes are passed through. Only the automatically mixed source music is ducked. */
 export const EmpAudio: React.FC<{
   music: string;
   fullMix: string;
   liner: string;
   short: boolean;
-}> = ({ music, fullMix, liner, short }) => {
+  musicStartFrame?: number;
+}> = ({ music, fullMix, liner, short, musicStartFrame=0 }) => {
   const { fps, durationInFrames } = useVideoConfig();
   const [duration, setDuration] = React.useState(0);
   const [initial] = React.useState(() =>
@@ -79,36 +79,14 @@ export const EmpAudio: React.FC<{
     };
   }, [liner, fullMix, initial]);
   if (fullMix) return <Audio src={fullMix} />;
-  const fade = Math.min(0.02, duration / 4);
   const start = Math.round((short ? 0.55 : 4.04) * fps);
-  const end = durationInFrames / fps;
-  const voiceStart = start / fps;
   return (
     <>
-      <Audio
+      {music && <Audio
         src={music}
-        volume={(frame) => {
-          const time = frame / fps;
-          const duck =
-            liner && duration > 0
-              ? interpolate(
-                  time,
-                  [
-                    voiceStart - 0.18,
-                    voiceStart,
-                    voiceStart + duration,
-                    voiceStart + duration + 0.3,
-                  ],
-                  [0.8, 0.25, 0.25, 0.8],
-                  clamp,
-                )
-              : 0.8;
-          return (
-            duck *
-            interpolate(time, [0, 0.08, end - 0.35, end], [0, 1, 1, 0], clamp)
-          );
-        }}
-      />
+        trimBefore={musicStartFrame}
+        volume={frame=>empMusicLevel(frame,fps,durationInFrames,duration,short,Boolean(liner))}
+      />}
       {liner && duration > 0 && (
         <Sequence
           from={start}
@@ -117,14 +95,7 @@ export const EmpAudio: React.FC<{
         >
           <Audio
             src={liner}
-            volume={(frame) =>
-              interpolate(
-                frame / fps,
-                [0, fade, duration - fade, duration],
-                [0, 1, 1, 0],
-                clamp,
-              )
-            }
+            volume={frame=>empVoiceLevel(frame,fps,duration)}
           />
         </Sequence>
       )}

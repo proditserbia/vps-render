@@ -1,3 +1,4 @@
+import {DoohVideo} from "../DoohVideo";
 import { doohStaticAsset, DoohFonts, loadDoohFonts } from "../doohAssets";
 import React from "react";
 import {
@@ -761,7 +762,8 @@ const Scene: React.FC<{
                   zIndex: 0,
                 }}
               >
-                <OffthreadVideo
+                <DoohVideo
+                  videoStartMs={props.videoStartMs}
                   src={asset(props.featuredVideo)}
                   muted
                   style={{

@@ -1,3 +1,4 @@
+import {DoohVideo} from "../DoohVideo";
 import { FittedDoohText } from "../FittedDoohText";
 import { doohStaticAsset, DoohFonts } from "../doohAssets";
 import React from "react";
@@ -369,7 +370,8 @@ export const ArtistSunsetLAScene: React.FC<ArtistLAProps> = (props) => {
       {/* Preserve the AE footage in-point (4.15 s), including its half-source-frame phase. */}
       <Sequence from={Math.round((249 / 60) * fps)}>
         <div style={{ ...plane, clipPath: videoClip, background: "#111" }}>
-          <OffthreadVideo
+          <DoohVideo
+            videoStartMs={props.videoStartMs}
             src={asset(props.featuredVideo)}
             muted
             style={{

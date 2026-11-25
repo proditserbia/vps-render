@@ -42,10 +42,9 @@
       "height": 1080,
       "fps": 30,
       "durationInFrames": 450,
-      "format": "jpg",
+      "format": "mp4",
       "label": "Static InSitu",
-      "audio": "none",
-      "frame": 25
+      "audio": "none"
     },
     "social": {
       "width": 1080,

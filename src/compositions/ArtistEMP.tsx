@@ -273,11 +273,11 @@ export const ArtistEMP: React.FC<EmpInput> = (input) => {
     >
       <DoohFonts prefix="Mega" />
       <EmpAudio
-        music={copy.featuredVideo ? src(copy.featuredVideo) : ''}
+        music={input._empPreparedAudio === '1' ? read(input,'_empMusic') : copy.featuredVideo ? src(copy.featuredVideo) : ''}
         fullMix={audio ? src(audio) : ""}
-        liner={copy.artistLiner ? src(copy.artistLiner) : ""}
+        liner={input._empPreparedAudio === '1' ? read(input,'_empLiner') : copy.artistLiner ? src(copy.artistLiner) : ""}
         short={short}
-        musicStartFrame={timing.startFrame}
+        musicStartFrame={input._empPreparedAudio === '1' ? 0 : timing.startFrame}
       />
       {[...scene.planes].reverse().map((plane, index) => {
         const { h, opacity } = empPlaneAt(plane, f, scene);

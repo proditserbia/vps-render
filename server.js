@@ -24,7 +24,8 @@ const PORT = process.env.PORT || 8080;
  * Directory where rendered output files are stored and served from.
  * Default: OS temp directory.  Override via OUTPUT_DIR env var.
  */
-const OUTPUT_DIR = process.env.OUTPUT_DIR || os.tmpdir();
+const OUTPUT_DIR = path.resolve(process.env.OUTPUT_DIR || path.join(__dirname, 'var', 'render-output'));
+fs.mkdirSync(OUTPUT_DIR, {recursive:true});
 
 /**
  * Base URL at which THIS server is reachable by the Firebase Function.
@@ -138,7 +139,7 @@ async function postCallback(jobId, payload) {
 
       if (response.ok) {
         console.log(`[callback] Callback accepted (attempt ${attempt})`, { jobId, status: response.status });
-        return;
+        return true;
       }
 
       const text = await response.text().catch(() => '');
@@ -163,6 +164,7 @@ async function postCallback(jobId, payload) {
   }
 
   console.error(`[callback] All callback attempts exhausted for job ${jobId}`);
+  return false;
 }
 
 let bundlePath = null;
@@ -194,33 +196,63 @@ async function buildBundle() {
 // them.  The worker processes one job at a time.  On completion or failure
 // the worker POSTs the result to the Firebase renderCallback function.
 
-const renderQueue = [];
+const {DurableRenderQueue} = require('./durable-render-queue.cjs');
+const QUEUE_DIR = path.resolve(process.env.RENDER_QUEUE_DIR || path.join(__dirname,'var','render-queue'));
+const startedAt = new Date().toISOString();
+// Exactly one worker process may own this journal. Do not use PM2 cluster mode.
+fs.mkdirSync(QUEUE_DIR,{recursive:true,mode:0o700});
+const lockPath=path.join(QUEUE_DIR,'worker.lock');
+if(fs.existsSync(lockPath)){
+  const pid=Number(fs.readFileSync(lockPath,'utf8'));
+  if(!Number.isSafeInteger(pid)||pid<1)throw new Error('Invalid worker.lock; inspect before removing');
+  let live=true;try{process.kill(pid,0);}catch(error){if(error.code==='ESRCH')live=false;else throw error;}
+  if(live)throw new Error(`Render queue already owned by PID ${pid}`);
+  fs.unlinkSync(lockPath);
+}
+fs.writeFileSync(lockPath,String(process.pid),{flag:'wx',mode:0o600});
+process.on('exit',()=>{try{if(fs.readFileSync(lockPath,'utf8')===String(process.pid))fs.unlinkSync(lockPath);}catch{}});
+const renderQueue = new DurableRenderQueue(QUEUE_DIR);
 let workerBusy = false;
-
-/** Add a job to the queue and start the worker if it is idle. */
+let stopping = false;
+function outputFilename(job){return `${job.jobId}${job.attempt?`-a${job.attempt}`:''}.${job.outputFormat||'mp4'}`;}
 function enqueueRenderJob(job) {
-  renderQueue.push(job);
-  maybeRunWorker();
+  const receipt=renderQueue.enqueue(job); // Atomic disk write BEFORE sending HTTP 202.
+  void maybeRunWorker();
+  return receipt;
 }
-
-/** Dequeue and execute render jobs one at a time. */
 async function maybeRunWorker() {
-  if (workerBusy || renderQueue.length === 0) return;
-  workerBusy = true;
-
-  while (renderQueue.length > 0) {
-    const job = renderQueue.shift();
-    try {
-      await executeRenderJob(job);
-    } catch (err) {
-      // executeRenderJob handles its own errors and posts callbacks;
-      // log any unexpected escape here so the worker loop stays alive.
-      console.error('[worker] Unexpected error processing render job:', { jobId: job.jobId, error: err?.message || String(err) });
+  if(workerBusy||!bundleReady||stopping)return;
+  workerBusy=true;
+  try {
+    let record;
+    while(!stopping && (record=renderQueue.next())){
+      const job=record.job;
+      if(record.state==='callback' && record.result.success){
+        const file=path.join(OUTPUT_DIR,outputFilename(job));
+        // e.g. /tmp removed on reboot: regenerate, never publish a missing file.
+        if(!fs.existsSync(file)||fs.statSync(file).size!==record.result.size){renderQueue.redo(job);continue;}
+      }
+      let result=record.result;
+      if(record.state==='queued'){
+        renderQueue.start(job);
+        result=await executeRenderJob(job);
+        renderQueue.result(job,result); // Durable callback outbox before network I/O.
+      }
+      if(await postCallback(job.jobId,result))renderQueue.done(job);
+      else renderQueue.defer(job);
     }
-  }
-
-  workerBusy = false;
+  } catch(error){
+    // Fail closed: keep the journal and let PM2 restart/recover it.
+    console.error('[worker] FATAL durable worker error',error);
+    process.exit(1);
+  } finally {workerBusy=false;}
 }
+setInterval(()=>{void maybeRunWorker();},5000).unref();
+for(const signal of ['SIGINT','SIGTERM'])process.on(signal,()=>{
+  stopping=true;
+  console.log(`[queue] ${signal}: pending jobs remain on disk for restart`);
+  process.exit(0);
+});
 
 /**
  * Execute a single render job and POST the result to the callback URL.
@@ -365,7 +397,7 @@ async function executeRenderJob({jobId, composition, inputProps, outputFormat, c
     const videoUrl = `${SERVER_BASE_URL}/files/${filename}`;
     log.info(`Output file size: ${(stats.size / 1024).toFixed(1)} KB → ${videoUrl}`);
 
-    await postCallback(jobId, {
+    return {
       jobId,
       success: true,
       ...(attempt ? {attempt} : {}),
@@ -376,7 +408,7 @@ async function executeRenderJob({jobId, composition, inputProps, outputFormat, c
         renderedAt: new Date().toISOString(),
         elapsedMs,
       },
-    });
+    };
   } catch (error) {
     const elapsedMs = Date.now() - startedAt;
     log.error('=== RENDER ERROR ===');
@@ -385,12 +417,12 @@ async function executeRenderJob({jobId, composition, inputProps, outputFormat, c
     log.error('Error message:', error?.message || String(error));
     if (error?.stack) log.error('Stack:', error.stack);
 
-    await postCallback(jobId, {
+    return {
       jobId,
       success: false,
       ...(attempt ? {attempt} : {}),
       error: error?.message || 'Unknown render error',
-    });
+    };
   } finally {
     if (interval) clearInterval(interval);
   }
@@ -436,6 +468,7 @@ function cleanupOldOutputFiles() {
   const cutoff = Date.now() - TEMP_FILE_TTL_MS;
   let removed = 0;
   for (const name of entries) {
+    if(renderQueue.pending().some(r=>outputFilename(r.job)===name))continue;
     const ext = path.extname(name).toLowerCase();
     if (!CLEANUP_EXTENSIONS.has(ext)) continue;
     const full = path.join(OUTPUT_DIR, name);
@@ -476,6 +509,8 @@ app.get('/health', (req, res) => {
     bundleReady,
     bundlePath: bundleReady ? bundlePath : null,
     timestamp: new Date().toISOString(),
+    startedAt,
+    queue: renderQueue.snapshot(),
     runtime: {
       pid: process.pid,
       cwd: process.cwd(),
@@ -557,7 +592,8 @@ app.post('/render', async (req, res) => {
     });
   }
 
-  enqueueRenderJob({
+  let receipt;
+  try { receipt=enqueueRenderJob({
     jobId,
     composition,
     inputProps,
@@ -566,11 +602,14 @@ app.post('/render', async (req, res) => {
     codec: CANONICAL_CODEC,
   });
 
-  log.info('Render job queued', {queueDepth: renderQueue.length + (workerBusy ? 1 : 0)});
+  } catch(error){log.error('Could not persist render job',error.message);return res.status(error.status||503).json({error:error.message});}
+  log.info('Render job durably accepted', receipt);
 
   return res.status(202).json({
     jobId,
-    status: 'queued',
+    status: receipt.state,
+    duplicate: receipt.duplicate,
+    durable: true,
     message: 'Render job accepted — result will be delivered to the callback URL',
   });
 });
@@ -666,7 +705,7 @@ app.listen(PORT, () => {
   console.log(`[server] Health check:      ${SERVER_BASE_URL}/health`);
   console.log(`[server] Render endpoint:   ${SERVER_BASE_URL}/render`);
 
-  buildBundle().catch((err) => {
+  buildBundle().then(()=>{console.log('[queue] Restored',renderQueue.snapshot());void maybeRunWorker();}).catch((err) => {
     console.error('[bundle] FATAL: Failed to build Remotion bundle:', err);
     process.exit(1);
   });
